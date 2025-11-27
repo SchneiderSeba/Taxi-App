@@ -26,17 +26,17 @@ export default function ExpenseTracker({ expenses, onAddExpense, gasUnitCost }: 
   return (
     <div>
       <div className="flex items-center justify-between mb-4">
-        <h2 className="text-xl font-semibold text-gray-900">Gastos de Combustible</h2>
+        <h2 className="text-xl font-semibold text-gray-900 dark:text-white">Gastos de Combustible</h2>
         <button
           onClick={() => setShowAddGas(true)}
-          className="flex items-center gap-2 bg-emerald-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-emerald-700 transition-all duration-200"
+          className="flex items-center gap-2 bg-emerald-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-emerald-700 transition-all duration-200 dark:bg-emerald-800 dark:hover:bg-emerald-900"
         >
           <Plus className="w-4 h-4" />
           Registrar Carga
         </button>
       </div>
 
-      <div className="bg-gradient-to-br from-orange-50 to-orange-100/50 rounded-xl p-5 border border-orange-200 mb-4">
+      <div className="bg-gradient-to-br from-orange-50 to-orange-100/50 dark:from-orange-900 dark:to-orange-950/50 rounded-xl p-5 border border-orange-200 dark:border-orange-700 mb-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="w-12 h-12 bg-orange-600 rounded-lg flex items-center justify-center">
@@ -58,7 +58,7 @@ export default function ExpenseTracker({ expenses, onAddExpense, gasUnitCost }: 
         <div className="space-y-2">
           <h3 className="text-sm font-semibold text-gray-700">Cargas de Hoy</h3>
           {todayExpenses.map(expense => (
-            <div key={expense.id} className="bg-white rounded-lg border border-gray-200 p-4 flex items-center justify-between">
+            <div key={expense.owner_id} className="bg-white rounded-lg border border-gray-200 p-4 flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <div className="w-8 h-8 bg-orange-100 rounded-lg flex items-center justify-center">
                   <Fuel className="w-4 h-4 text-orange-600" />

@@ -1,8 +1,11 @@
 import { Settings, TrendingUp, Fuel, FileText, Shield } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { clientSupaBase } from '../supabase/client';
 import { UserSettings, Expense, Trip } from '../types';
 import ExpenseTracker from './ExpenseTracker';
 import EarningsReport from './EarningsReport';
+
+
 
 interface ProfileViewProps {
   settings: UserSettings;
@@ -16,6 +19,13 @@ export default function ProfileView({ settings, onUpdateSettings, expenses, onAd
   const [activeTab, setActiveTab] = useState<'settings' | 'earnings'>('settings');
   const [editMode, setEditMode] = useState(false);
   const [tempSettings, setTempSettings] = useState(settings);
+  const [userEmail, setUserEmail] = useState<string | null>(null);
+
+  useEffect(() => {
+    clientSupaBase.auth.getUser().then(({ data }) => {
+      setUserEmail(data?.user?.email ?? null);
+    });
+  }, []);
 
   const handleSave = () => {
     onUpdateSettings(tempSettings);
@@ -30,12 +40,12 @@ export default function ProfileView({ settings, onUpdateSettings, expenses, onAd
   return (
     <div>
       <div className="mb-6">
-        <h1 className="text-3xl font-bold text-gray-900">Mi Perfil</h1>
-        <p className="text-gray-600 mt-1">Gestiona tu configuración y visualiza tus ganancias</p>
+        <h1 className="text-3xl font-bold text-gray-900 dark:text-white">{userEmail || 'Mi Perfil'}</h1>
+        <p className="text-gray-600 dark:text-gray-300 mt-1">Gestiona tu configuración y visualiza tus ganancias</p>
       </div>
 
-      <div className="bg-white rounded-xl border border-gray-200 shadow-sm mb-6">
-        <div className="flex border-b border-gray-200">
+      <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm mb-6">
+        <div className="flex border-b border-gray-200 dark:border-gray-700">
           <button
             onClick={() => setActiveTab('settings')}
             className={`flex items-center gap-2 px-6 py-4 font-medium transition-all duration-200 border-b-2 ${

@@ -1,41 +1,122 @@
 import { Chrome } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { clientSupaBase } from '../supabase/client';
+import { useNavigate } from 'react-router-dom';
 
 interface LoginProps {
   onLogin: () => void;
 }
 
+
 export default function Login({ onLogin }: LoginProps) {
+  const [registerEmail, setRegisterEmail] = useState('');
+  const [registerError, setRegisterError] = useState('');
+  const [registerSuccess, setRegisterSuccess] = useState('');
+  const navigate = useNavigate();
+
+  // Procesar magic link: si hay access_token y refresh_token en la URL, establecer sesión
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.hash.replace('#', '?'));
+    const access_token = params.get('access_token');
+    const refresh_token = params.get('refresh_token');
+    if (access_token && refresh_token) {
+      clientSupaBase.auth.setSession({ access_token, refresh_token })
+        .then(() => {
+          navigate('/trips', { replace: true });
+        });
+    }
+  }, [navigate]);
+
+  const handleRegister = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setRegisterError('');
+    setRegisterSuccess('');
+    if (!registerEmail) {
+      setRegisterError('Completa todos los campos.');
+      return;
+    }
+    try {
+      const { error } = await clientSupaBase.auth.signInWithOtp({
+        email: registerEmail,
+        options: {
+          emailRedirectTo: window.location.origin + '/login'
+        },
+      });
+      if (error) {
+        setRegisterError(error.message);
+      } else {
+        setRegisterSuccess('Revisa tu correo para continuar el registro.');
+        setRegisterEmail('');
+      }
+    } catch {
+      setRegisterError('Error al registrar. Intenta nuevamente.');
+    }
+  };
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-white to-teal-50 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-white to-teal-50 dark:from-gray-900 dark:via-gray-950 dark:to-gray-900 flex items-center justify-center p-4 transition-colors">
       <div className="max-w-md w-full">
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-16 h-16 bg-emerald-600 rounded-xl mb-4">
+          <div className="inline-flex items-center justify-center w-16 h-16 bg-emerald-600 dark:bg-emerald-800 rounded-xl mb-4">
             <svg className="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
             </svg>
           </div>
-          <h1 className="text-4xl font-bold text-gray-900 mb-2">TaxiTrack</h1>
-          <p className="text-gray-600">Gestiona tus viajes y ganancias</p>
+          <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-2">TaxiTrack</h1>
+          <p className="text-gray-600 dark:text-gray-300">Gestiona tus viajes y ganancias</p>
         </div>
 
-        <div className="bg-white rounded-2xl shadow-xl border border-gray-200 p-8">
-          <h2 className="text-2xl font-semibold text-gray-900 mb-6">Iniciar sesión</h2>
+        <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-xl border border-gray-200 dark:border-gray-700 p-8">
+          <h2 className="text-2xl font-semibold text-gray-900 dark:text-white mb-6">Iniciar sesión</h2>
 
           <button
             onClick={onLogin}
-            className="w-full flex items-center justify-center gap-3 bg-white border-2 border-gray-300 rounded-lg px-6 py-3.5 text-gray-700 font-medium hover:bg-gray-50 hover:border-gray-400 transition-all duration-200 hover:shadow-md"
+            className="w-full flex items-center justify-center gap-3 bg-white dark:bg-gray-800 border-2 border-gray-300 dark:border-gray-700 rounded-lg px-6 py-3.5 text-gray-700 dark:text-gray-200 font-medium hover:bg-gray-50 dark:hover:bg-gray-700 hover:border-gray-400 dark:hover:border-gray-500 transition-all duration-200 hover:shadow-md"
           >
             <Chrome className="w-5 h-5" />
             Continuar con Google
           </button>
 
-          <p className="text-sm text-gray-500 text-center mt-6">
+          {/* Sección de registro con email */}
+          <div className="my-8 flex items-center gap-2">
+            <div className="flex-1 h-px bg-gray-200 dark:bg-gray-700" />
+            <span className="text-gray-400 text-sm">o registrarse con email</span>
+            <div className="flex-1 h-px bg-gray-200 dark:bg-gray-700" />
+          </div>
+          <form onSubmit={handleRegister} className="space-y-4">
+            <input
+              type="email"
+              className="w-full rounded-lg border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 px-4 py-3 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-emerald-400"
+              placeholder="Correo electrónico"
+              value={registerEmail}
+              onChange={e => setRegisterEmail(e.target.value)}
+              autoComplete="email"
+            />
+            {/* <input
+              type="password"
+              className="w-full rounded-lg border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 px-4 py-3 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-emerald-400"
+              placeholder="Contraseña"
+              value={registerPassword}
+              onChange={e => setRegisterPassword(e.target.value)}
+              autoComplete="new-password"
+            /> */}
+            {registerError && <p className="text-red-600 text-sm">{registerError}</p>}
+            {registerSuccess && <p className="text-emerald-600 text-sm">{registerSuccess}</p>}
+            <button
+              type="submit"
+              className="w-full bg-emerald-600 hover:bg-emerald-700 dark:bg-emerald-800 dark:hover:bg-emerald-900 text-white font-semibold rounded-lg py-3 transition-colors"
+            >
+              Registrarse
+            </button>
+          </form>
+
+          <p className="text-sm text-gray-500 dark:text-gray-400 text-center mt-6">
             Al iniciar sesión, aceptas nuestros términos y condiciones
           </p>
         </div>
 
         <div className="mt-8 text-center">
-          <p className="text-sm text-gray-600">
+          <p className="text-sm text-gray-600 dark:text-gray-300">
             Sistema de gestión para taxistas profesionales
           </p>
         </div>
