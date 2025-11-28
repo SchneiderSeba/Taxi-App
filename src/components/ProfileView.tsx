@@ -11,7 +11,7 @@ interface ProfileViewProps {
   settings: UserSettings;
   onUpdateSettings: (settings: UserSettings) => void;
   expenses: Expense[];
-  onAddExpense: (expense: Omit<Expense, 'id' | 'date'>) => void;
+  onAddExpense: (expense: Omit<Expense, 'id' | 'date' | 'owner_id'>) => void;
   trips: Trip[];
 }
 
