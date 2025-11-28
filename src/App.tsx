@@ -67,10 +67,8 @@ function App() {
     }
   }, [isAuthenticated]);
 
-  const [expenses, setExpenses] = useState<Expense[]>(() => {
-    const saved = localStorage.getItem('expenses');
-    return saved ? JSON.parse(saved) : [];
-  });
+  const [expenses, setExpenses] = useState<Expense[]>([]);
+  const [loadingExpenses, setLoadingExpenses] = useState(true);
 
   const [settings, setSettings] = useState<UserSettings>(() => {
     const saved = localStorage.getItem('settings');
@@ -83,9 +81,35 @@ function App() {
 
 
 
+
+  // Cargar todos los gastos desde Supabase al iniciar
   useEffect(() => {
-    localStorage.setItem('expenses', JSON.stringify(expenses));
-  }, [expenses]);
+    if (!isAuthenticated) {
+      setExpenses([]);
+      setLoadingExpenses(false);
+      return;
+    } else {
+      const fetchExpenses = async () => {
+        setLoadingExpenses(true);
+        const { data: userData } = await clientSupaBase.auth.getUser();
+        const userId = userData?.user?.id;
+        if (!userId) {
+          setExpenses([]);
+          setLoadingExpenses(false);
+          return;
+        }
+        const { data, error } = await clientSupaBase
+          .from('Expenses')
+          .select('*')
+          .eq('owner_id', userId);
+        if (!error && data) {
+          setExpenses(data);
+        }
+        setLoadingExpenses(false);
+      };
+      fetchExpenses();
+    }
+  }, [isAuthenticated]);
 
   // useEffect(() => {
   //   localStorage.setItem('settings', JSON.stringify(settings));
@@ -137,14 +161,27 @@ function App() {
     }
   };
 
-  const handleAddExpense = (expense: Omit<Expense, 'id' | 'date'>) => {
-    const newExpense: Expense = {
+  const handleAddExpense = async (expense: Omit<Expense, 'id' | 'date' | 'owner_id'>) => {
+    // Obtener el usuario autenticado
+    const { data: userData } = await clientSupaBase.auth.getUser();
+    const userId = userData?.user?.id;
+    if (!userId) return;
+    const newExpense = {
       ...expense,
-      owner_id: crypto.randomUUID(),
+      owner_id: userId,
       date: new Date().toISOString().split('T')[0]
     };
-    setExpenses([...expenses, newExpense]);
-    // setRefresh(!refresh);
+    const { error } = await clientSupaBase.from('Expenses').insert([newExpense]);
+    // Si no hay error, volver a hacer fetch de los gastos
+    if (!error) {
+      const { data: expensesData, error: expensesError } = await clientSupaBase
+        .from('Expenses')
+        .select('*')
+        .eq('owner_id', userId);
+      if (!expensesError && expensesData) {
+        setExpenses(expensesData);
+      }
+    }
   };
 
   const handleUpdateSettings = (newSettings: UserSettings) => {

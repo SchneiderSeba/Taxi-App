@@ -4,7 +4,7 @@ import { Expense } from '../types';
 
 interface ExpenseTrackerProps {
   expenses: Expense[];
-  onAddExpense: (expense: Omit<Expense, 'id' | 'date'>) => void;
+  onAddExpense: (expense: Omit<Expense, 'id' | 'date' | 'owner_id'>) => void;
   gasUnitCost: number;
 }
 
@@ -58,7 +58,7 @@ export default function ExpenseTracker({ expenses, onAddExpense, gasUnitCost }: 
         <div className="space-y-2">
           <h3 className="text-sm font-semibold text-gray-700">Cargas de Hoy</h3>
           {todayExpenses.map(expense => (
-            <div key={expense.owner_id} className="bg-white rounded-lg border border-gray-200 p-4 flex items-center justify-between">
+            <div key={expense.id ?? expense.owner_id ?? Math.random()} className="bg-white rounded-lg border border-gray-200 p-4 flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <div className="w-8 h-8 bg-orange-100 rounded-lg flex items-center justify-center">
                   <Fuel className="w-4 h-4 text-orange-600" />

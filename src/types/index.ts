@@ -11,8 +11,9 @@ export interface Trip {
 }
 
 export interface Expense {
+  id?: number;
   owner_id: string;
-  type: 'gas' | 'insurance' | 'registration';
+  type: string;
   amount: number;
   date: string;
 }
