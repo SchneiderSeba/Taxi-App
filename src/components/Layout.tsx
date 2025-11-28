@@ -11,19 +11,28 @@ interface LayoutProps {
 }
 
 export default function Layout({ children, currentView, onNavigate, onLogout, userName }: LayoutProps) {
-  const [darkMode, setDarkMode] = useState(() => {
+  const [darkMode, setDarkMode] = useState(false);
+
+  // Sincronizar darkMode con localStorage y clase 'dark' al montar
+  useEffect(() => {
     if (typeof window !== 'undefined') {
-      return localStorage.getItem('theme') === 'dark';
+      const theme = localStorage.getItem('theme');
+      if (theme === 'dark') {
+        setDarkMode(true);
+        document.documentElement.classList.add('dark');
+      } else {
+        setDarkMode(false);
+        document.documentElement.classList.remove('dark');
+      }
     }
-    return false;
-  });
+  }, []);
 
   useEffect(() => {
     if (darkMode) {
-      document.body.classList.add('dark');
+      document.documentElement.classList.add('dark');
       localStorage.setItem('theme', 'dark');
     } else {
-      document.body.classList.remove('dark');
+      document.documentElement.classList.remove('dark');
       localStorage.setItem('theme', 'light');
     }
   }, [darkMode]);
@@ -70,7 +79,9 @@ export default function Layout({ children, currentView, onNavigate, onLogout, us
               <div className="ml-4 pl-4 border-l border-gray-200 dark:border-gray-700 flex items-center gap-3">
                 <span className="text-sm text-gray-700 dark:text-gray-200 hidden sm:inline">{userName}</span>
                 {/* Switch dark mode */}
-                <label className="flex items-center cursor-pointer select-none">
+                <label
+                  className="flex items-center cursor-pointer select-none"
+                >
                   <span className="mr-2">🌞</span>
                   <div className="relative">
                     <input
