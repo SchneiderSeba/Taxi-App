@@ -4,10 +4,10 @@ import ExpenseTracker from './ExpenseTracker';
 import EarningsReport from './EarningsReport';
 import ProfileCard from './ProfileCard';
 import { clientSupaBase } from '../supabase/client';
-import { Expense, Profile, Trip, UserSettings } from '../types';
+import { Expense, Profile, Trip, UserSettings, ProfileEditableField } from '../types';
 
 type ActiveTab = 'settings' | 'earnings' | 'profile';
-type EditableProfileField = 'carModel' | 'carPlate';
+type EditableProfileField = ProfileEditableField;
 
 interface ProfileViewProps {
   settings: UserSettings;
@@ -28,6 +28,22 @@ export default function ProfileView({ settings, onUpdateSettings, expenses, onAd
   const [modalField, setModalField] = useState<EditableProfileField | null>(null);
   const [modalValue, setModalValue] = useState('');
   const [isSavingField, setIsSavingField] = useState(false);
+
+  const fieldMeta: Record<EditableProfileField, { title: string; placeholder: string; helper?: string }> = {
+    carModel: {
+      title: 'modelo del auto',
+      placeholder: 'Ej: Toyota Corolla',
+    },
+    carPlate: {
+      title: 'patente',
+      placeholder: 'Ej: ABC123',
+    },
+    pictureUrl: {
+      title: 'foto de perfil',
+      placeholder: 'Pega la URL de tu imagen',
+      helper: 'Puedes dejar vacío para volver al avatar por defecto.',
+    },
+  };
 
   useEffect(() => {
     setTempSettings(settings);
@@ -112,6 +128,8 @@ export default function ProfileView({ settings, onUpdateSettings, expenses, onAd
       handleModalClose();
     }
   };
+
+  const modalConfig = modalField ? fieldMeta[modalField] : null;
 
   return (
     <div className="space-y-6">
@@ -309,18 +327,34 @@ export default function ProfileView({ settings, onUpdateSettings, expenses, onAd
         </div>
       </div>
 
-      {isModalOpen && modalField && (
+      {isModalOpen && modalField && modalConfig && (
         <div className="fixed inset-0 flex items-center justify-center bg-black/50 backdrop-blur-sm z-50">
           <div className="bg-white dark:bg-gray-900 rounded-xl shadow-xl border border-gray-200 dark:border-gray-700 w-full max-w-md p-6">
             <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
-              Editar {modalField === 'carModel' ? 'modelo del auto' : 'patente'}
+              Editar {modalConfig.title}
             </h3>
             <input
               value={modalValue}
               onChange={(e) => setModalValue(e.target.value)}
               className="w-full px-4 py-3 border border-gray-300 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
-              placeholder={modalField === 'carModel' ? 'Ej: Toyota Corolla' : 'Ej: ABC123'}
+              placeholder={modalConfig.placeholder}
             />
+            {modalField === 'pictureUrl' && modalValue.trim() && (
+              <div className="mt-4">
+                <p className="text-sm text-gray-500 dark:text-gray-400 mb-2">Vista previa:</p>
+                <img
+                  src={modalValue}
+                  alt="Vista previa de perfil"
+                  className="w-32 h-32 object-cover rounded-full border border-gray-200 dark:border-gray-700"
+                  onError={(event) => {
+                    event.currentTarget.style.display = 'none';
+                  }}
+                />
+              </div>
+            )}
+            {modalConfig.helper && (
+              <p className="text-sm text-gray-500 dark:text-gray-400 mt-3">{modalConfig.helper}</p>
+            )}
             <div className="flex justify-end gap-3 mt-6">
               <button
                 onClick={handleModalClose}

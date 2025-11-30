@@ -35,3 +35,5 @@ export interface Profile {
   pictureUrl?: string;
   created_at: string;
 }
+
+export type ProfileEditableField = 'carModel' | 'carPlate' | 'pictureUrl';

@@ -1,26 +1,35 @@
-import { User2, Pencil } from 'lucide-react';
-import { Profile } from '../types';
+import { User2, Pencil, Camera } from 'lucide-react';
+import { Profile, ProfileEditableField } from '../types';
 
 interface ProfileCardProps {
   profile: Profile;
-  onEditField: (field: 'carModel' | 'carPlate') => void;
+  onEditField: (field: ProfileEditableField) => void;
 }
 
 export default function ProfileCard({ profile, onEditField }: ProfileCardProps) {
   return (
     <div className="max-w-md mx-auto bg-white dark:bg-gray-900 rounded-xl shadow-md overflow-hidden border border-gray-200 dark:border-gray-700 p-6">
       <div className="flex items-center space-x-4">
-        {profile.pictureUrl ? (
-          <img
-            src={profile.pictureUrl}
-            alt="Foto de perfil"
-            className="w-20 h-20 rounded-full object-cover border-2 border-emerald-500"
-          />
-        ) : (
-          <div className="w-20 h-20 rounded-full bg-emerald-100 flex items-center justify-center border-2 border-emerald-500">
-            <User2 className="w-10 h-10 text-emerald-600" />
-          </div>
-        )}
+        <div className="relative">
+          {profile.pictureUrl ? (
+            <img
+              src={profile.pictureUrl}
+              alt="Foto de perfil"
+              className="w-20 h-20 rounded-full object-cover border-2 border-emerald-500"
+            />
+          ) : (
+            <div className="w-20 h-20 rounded-full bg-emerald-100 flex items-center justify-center border-2 border-emerald-500">
+              <User2 className="w-10 h-10 text-emerald-600" />
+            </div>
+          )}
+          <button
+            onClick={() => onEditField('pictureUrl')}
+            className="absolute -bottom-1 -right-1 p-1.5 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-full shadow hover:bg-emerald-50"
+            aria-label="Editar foto de perfil"
+          >
+            <Camera className="w-4 h-4 text-emerald-600" />
+          </button>
+        </div>
         <div>
           <h2 className="text-2xl font-bold text-gray-900 dark:text-white">{profile.username}</h2>
           <p className="text-gray-600 dark:text-gray-300">Email : {profile.email}</p>
