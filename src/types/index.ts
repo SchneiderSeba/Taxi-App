@@ -23,3 +23,15 @@ export interface UserSettings {
   insuranceMonthly: number;
   registrationMonthly: number;
 }
+
+export interface Profile {
+  id: number;
+  owner_id: string;
+  username: string;
+  email: string;
+  phone?: string;
+  carModel?: string;
+  carPlate?: string;
+  pictureUrl?: string;
+  created_at: string;
+}

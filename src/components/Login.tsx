@@ -39,7 +39,10 @@ export default function Login({ onLogin }: LoginProps) {
       const { error } = await clientSupaBase.auth.signInWithOtp({
         email: registerEmail,
         options: {
-          emailRedirectTo: 'https://taxi-app-production.up.railway.app/login'
+          //Para Produccion
+          // emailRedirectTo: 'https://taxi-app-production.up.railway.app/login'
+          //Para Desarrollo
+          emailRedirectTo: 'http://localhost:5173/login'
         },
       });
       if (error) {

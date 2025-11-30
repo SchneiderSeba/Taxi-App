@@ -1,0 +1,18 @@
+VISTA CLIENTE
+
+* Lista de Drivers Disponibles en ese Momento
+    * Seleccionar Driver DIsponible y solicitar Viaje
+        * Calculo de Tiempo Estipado 
+
+* Pago con Mercado Pago
+
+VISTA DRIVER
+
+* Perfil , Agregar mas Datos por driver 
+    * Tabla Users
+
+* Auth con OAuth y Google
+
+* Recibir solicitudes de Viajes
+    * Aceptar , Rechazar
+        * Aceptar Crea un Nuevo Viaje para el Driver

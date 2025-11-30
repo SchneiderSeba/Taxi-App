@@ -14,6 +14,48 @@ function App() {
   const [userName] = useState('Usuario');
   const navigate = useNavigate();
 
+  // Crear registro en UserProfile si no existe
+  useEffect(() => {
+    async function ensureUserProfile() {
+      const { data: userData } = await clientSupaBase.auth.getUser();
+      const user = userData?.user;
+      if (!user) return;
+
+      const { data: profile, error } = await clientSupaBase
+        .from('UsersProfile')
+        .select('*')
+        .eq('owner_id', user.id)
+        .maybeSingle();
+
+      if (error && error.code !== 'PGRST116') {
+        console.error('Error checking user profile', error);
+        return;
+      }
+
+      if (!profile) {
+        const payload = {
+          owner_id: user.id,
+          email: user.email,
+          username: user.email?.split('@')[0] || 'Usuario',
+          created_at: new Date().toISOString(),
+          carModel: '',
+          carPlate: '',
+          pictureUrl: null
+        };
+        const { error: insertError } = await clientSupaBase
+          .from('UsersProfile')
+          .insert([payload])
+          .select();
+        if (insertError) {
+          console.error('Error inserting user profile', insertError, payload);
+        }
+      }
+    }
+    if (isAuthenticated) {
+      ensureUserProfile();
+    }
+  }, [isAuthenticated]);
+
   // Sincroniza el estado de autenticación con Supabase
   useEffect(() => {
     // Chequea usuario actual al montar
@@ -111,9 +153,6 @@ function App() {
     }
   }, [isAuthenticated]);
 
-  // useEffect(() => {
-  //   localStorage.setItem('settings', JSON.stringify(settings));
-  // }, [settings]);
 
   const handleLogin = () => {
     setIsAuthenticated(true);
