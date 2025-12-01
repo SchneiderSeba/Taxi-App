@@ -145,7 +145,7 @@ export default function ProfileView({ settings, onUpdateSettings, expenses, onAd
             className={`flex items-center gap-2 px-6 py-4 font-medium transition-all duration-200 border-b-2 ${
               activeTab === 'settings'
                 ? 'border-emerald-600 text-emerald-600'
-                : 'border-transparent text-gray-600 hover:text-gray-900'
+                : 'border-transparent text-white-600 hover:text-gray-900'
             }`}
           >
             <Settings className="w-5 h-5" />
@@ -156,7 +156,7 @@ export default function ProfileView({ settings, onUpdateSettings, expenses, onAd
             className={`flex items-center gap-2 px-6 py-4 font-medium transition-all duration-200 border-b-2 ${
               activeTab === 'earnings'
                 ? 'border-emerald-600 text-emerald-600'
-                : 'border-transparent text-gray-600 hover:text-gray-900'
+                : 'border-transparent text-white-600 hover:text-gray-900'
             }`}
           >
             <TrendingUp className="w-5 h-5" />
@@ -167,7 +167,7 @@ export default function ProfileView({ settings, onUpdateSettings, expenses, onAd
             className={`flex items-center gap-2 px-6 py-4 font-medium transition-all duration-200 border-b-2 ${
               activeTab === 'profile'
                 ? 'border-emerald-600 text-emerald-600'
-                : 'border-transparent text-gray-600 hover:text-gray-900'
+                : 'border-transparent text-white-600 hover:text-gray-900'
             }`}
           >
             <User2 className="w-5 h-5" />
