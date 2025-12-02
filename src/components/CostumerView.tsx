@@ -103,7 +103,7 @@ const CostumerView = () => {
 
     const { passengerName, pickup, destination, phone, preferredTime } = form;
 
-    if (!passengerName.trim() || !pickup.trim() || !destination.trim()) {
+    if (!passengerName?.trim() || !pickup?.trim() || !destination?.trim()) {
       setFormError('Nombre, punto de partida y destino son obligatorios.');
       return;
     }
