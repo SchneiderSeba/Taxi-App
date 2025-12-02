@@ -16,17 +16,17 @@ import type { Profile, Trip } from '../types';
 
 interface TripRequestForm {
   passengerName: string;
-  pickup: string;
-  destination: string;
-  phone: string;
-  preferredTime: string;
+  pickup?: string;
+  destination?: string;
+  phone?: string;
+  preferredTime?: string;
 }
 
 interface RequestStatusCard {
   driverName: string;
-  pickup: string;
-  destination: string;
-  preferredTime: string;
+  pickup?: string;
+  destination?: string;
+  preferredTime?: string;
   createdAt: string;
   status: Trip['done'];
 }
@@ -112,12 +112,12 @@ const CostumerView = () => {
     setFormError(null);
 
     const payload = {
-      passenger_name: passengerName,
+      name: passengerName,
       pickup,
       destination,
       passenger_phone: phone || null,
       preferred_time: preferredTime || null,
-      driver_id: selectedDriver.owner_id,
+      owner_id: selectedDriver.owner_id,
       done: 'pending' as Trip['done']
     };
 

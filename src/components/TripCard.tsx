@@ -42,6 +42,10 @@ const TripCard: FC<TripCardProps> = ({ trip, onUpdateStatus }) => {
   const config = statusConfig[trip.done];
   const StatusIcon = config.icon;
 
+  const priceLabel = typeof trip.price === 'number'
+    ? `$${trip.price.toFixed(2)}`
+    : 'Sin tarifa registrada';
+
   const updateStatus = async (id: number, done: Trip['done']) => {
     try {
       const { error } = await clientSupaBase.from('Trips').update({ done }).eq('id', id);
@@ -76,7 +80,7 @@ const TripCard: FC<TripCardProps> = ({ trip, onUpdateStatus }) => {
 
           <div className="flex items-center gap-2 text-emerald-600 dark:text-emerald-300 font-semibold">
             <DollarSign className="w-5 h-5" />
-            <span className="text-lg">${trip.price.toFixed(2)}</span>
+            <span className="text-lg">{priceLabel}</span>
           </div>
         </div>
 
