@@ -6,8 +6,8 @@ import { useState } from 'react';
 
 interface TripsViewProps {
   trips: Trip[];
-  onAddTrip: (trip: Omit<Trip, 'id' | 'date'>) => void;
-  onUpdateTripStatus: (id: string, status: Trip['done']) => void;
+  onAddTrip: (trip: Omit<Trip, 'id' | 'owner_id' | 'created_at'>) => void;
+  onUpdateTripStatus: (id: number, status: Trip['done']) => void;
   dailyExpenses: number;
 }
 
@@ -17,9 +17,9 @@ export default function TripsView({ trips, onAddTrip, onUpdateTripStatus, dailyE
   const today = new Date().toISOString().split('T')[0];
   const todayTrips = trips.filter(trip => (trip.created_at || trip.date)?.startsWith(today));
 
-  const completedTrips = todayTrips.filter(trip => trip.done === true);
-  const pendingTrips = todayTrips.filter(trip => trip.done === false);
-  const cancelledTrips = todayTrips.filter(trip => trip.done === false);
+  const completedTrips = todayTrips.filter(trip => trip.done === 'completed');
+  const pendingTrips = todayTrips.filter(trip => trip.done === 'pending');
+  const cancelledTrips = todayTrips.filter(trip => trip.done === 'cancelled');
 
   const totalIncome = completedTrips.reduce((sum, trip) => sum + trip.price, 0);
   const netEarnings = totalIncome - dailyExpenses;
@@ -112,7 +112,7 @@ export default function TripsView({ trips, onAddTrip, onUpdateTripStatus, dailyE
           </div>
         )}
 
-        {/* {cancelledTrips.length > 0 && (
+        {cancelledTrips.length > 0 && (
           <div>
             <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-3 flex items-center gap-2">
               <XCircle className="w-5 h-5 text-red-600 dark:text-red-300" />
@@ -124,7 +124,7 @@ export default function TripsView({ trips, onAddTrip, onUpdateTripStatus, dailyE
               ))}
             </div>
           </div>
-        )} */}
+        )}
 
         {todayTrips.length === 0 && (
           <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-12 text-center">

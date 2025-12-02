@@ -1,32 +1,48 @@
-import { MapPin, DollarSign, CheckCircle, Clock } from 'lucide-react';
+import { type FC, type ElementType } from 'react';
+import { MapPin, DollarSign, CheckCircle, Clock, XCircle } from 'lucide-react';
 import { Trip } from '../types';
 import { clientSupaBase } from '../supabase/client';
 
 interface TripCardProps {
   trip: Trip;
-  onUpdateStatus: (id: number, done: boolean) => void;
+  onUpdateStatus: (id: number, done: Trip['done']) => void;
 }
 
-const TripCard: React.FC<TripCardProps> = ({ trip, onUpdateStatus }) => {
-  // Config visual según done
-  const config = trip.done
-    ? {
-        icon: CheckCircle,
-        color: 'text-emerald-600 dark:text-emerald-300',
-        bg: 'bg-emerald-50 dark:bg-emerald-900/40',
-        border: 'border-emerald-200 dark:border-emerald-700',
-        label: 'Completado'
-      }
-    : {
-        icon: Clock,
-        color: 'text-blue-600 dark:text-blue-300',
-        bg: 'bg-blue-50 dark:bg-blue-900/40',
-        border: 'border-blue-200 dark:border-blue-700',
-        label: 'Pendiente'
-      };
+const TripCard: FC<TripCardProps> = ({ trip, onUpdateStatus }) => {
+  const statusConfig: Record<Trip['done'], {
+    icon: ElementType;
+    color: string;
+    bg: string;
+    border: string;
+    label: string;
+  }> = {
+    pending: {
+      icon: Clock,
+      color: 'text-blue-600 dark:text-blue-300',
+      bg: 'bg-blue-50 dark:bg-blue-900/40',
+      border: 'border-blue-200 dark:border-blue-700',
+      label: 'Pendiente'
+    },
+    completed: {
+      icon: CheckCircle,
+      color: 'text-emerald-600 dark:text-emerald-300',
+      bg: 'bg-emerald-50 dark:bg-emerald-900/40',
+      border: 'border-emerald-200 dark:border-emerald-700',
+      label: 'Aprobado'
+    },
+    cancelled: {
+      icon: XCircle,
+      color: 'text-red-600 dark:text-red-300',
+      bg: 'bg-red-50 dark:bg-red-900/40',
+      border: 'border-red-200 dark:border-red-700',
+      label: 'Cancelado'
+    }
+  };
+
+  const config = statusConfig[trip.done];
   const StatusIcon = config.icon;
 
-  const updateStatus = async (id: number, done: boolean) => {
+  const updateStatus = async (id: number, done: Trip['done']) => {
     try {
       const { error } = await clientSupaBase.from('Trips').update({ done }).eq('id', id);
       if (error) {
@@ -65,13 +81,13 @@ const TripCard: React.FC<TripCardProps> = ({ trip, onUpdateStatus }) => {
         </div>
 
         <div className="flex flex-col gap-2">
-          {!trip.done && (
+          {trip.done === 'pending' && (
             <button
-              onClick={() => updateStatus(trip.id, true)}
+              onClick={() => updateStatus(trip.id, 'completed')}
               className="flex items-center gap-2 bg-emerald-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-emerald-700 dark:bg-emerald-800 dark:hover:bg-emerald-900 transition-all duration-200"
             >
               <CheckCircle className="w-4 h-4" />
-              Completar
+              Aprobar solicitud
             </button>
           )}
         </div>

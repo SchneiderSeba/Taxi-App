@@ -1,13 +1,14 @@
-export type TripStatus = false | true ;
+export type TripStatus = 'pending' | 'completed' | 'cancelled';
 
 export interface Trip {
   id: number;
   owner_id: string;
   name: string;
   address: string;
-  price: number;
+  price?: number;
   done: TripStatus;
-  date: string;
+  date?: string;
+  created_at?: string;
 }
 
 export interface Expense {

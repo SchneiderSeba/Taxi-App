@@ -4,6 +4,7 @@ import Login from './components/Login';
 import Layout from './components/Layout';
 import TripsView from './components/TripsView';
 import ProfileView from './components/ProfileView';
+import CostumerView from './components/CostumerView';
 import { Trip, Expense, UserSettings } from './types';
 
 import { clientSupaBase } from './supabase/client';
@@ -74,22 +75,18 @@ function App() {
   }, []);
 
   const [trips, setTrips] = useState<Trip[]>([]);
-  const [loadingTrips, setLoadingTrips] = useState(true);
 
   // Cargar todos los viajes desde Supabase al iniciar
   useEffect(() => {
     if (!isAuthenticated) {
       setTrips([]);
-      setLoadingTrips(false);
       return;
     } else {
       const fetchTrips = async () => {
-        setLoadingTrips(true);
         const { data: userData } = await clientSupaBase.auth.getUser();
         const userId = userData?.user?.id;
         if (!userId) {
           setTrips([]);
-          setLoadingTrips(false);
           return;
         }
         const { data, error } = await clientSupaBase
@@ -99,7 +96,6 @@ function App() {
         if (!error && data) {
           setTrips(data);
         }
-        setLoadingTrips(false);
 
         console.log('User ID:', userId);
         console.log('Trips:', data);
@@ -110,7 +106,6 @@ function App() {
   }, [isAuthenticated]);
 
   const [expenses, setExpenses] = useState<Expense[]>([]);
-  const [loadingExpenses, setLoadingExpenses] = useState(true);
 
   const [settings, setSettings] = useState<UserSettings>(() => {
     const saved = localStorage.getItem('settings');
@@ -128,16 +123,13 @@ function App() {
   useEffect(() => {
     if (!isAuthenticated) {
       setExpenses([]);
-      setLoadingExpenses(false);
       return;
     } else {
       const fetchExpenses = async () => {
-        setLoadingExpenses(true);
         const { data: userData } = await clientSupaBase.auth.getUser();
         const userId = userData?.user?.id;
         if (!userId) {
           setExpenses([]);
-          setLoadingExpenses(false);
           return;
         }
         const { data, error } = await clientSupaBase
@@ -147,7 +139,6 @@ function App() {
         if (!error && data) {
           setExpenses(data);
         }
-        setLoadingExpenses(false);
       };
       fetchExpenses();
     }
@@ -165,7 +156,7 @@ function App() {
     navigate('/login');
   };
 
-  const handleAddTrip = async (trip: Omit<Trip, 'id' | 'date' | 'owner_id'>) => {
+  const handleAddTrip = async (trip: Omit<Trip, 'id' | 'owner_id' | 'created_at'>) => {
     // Obtener el usuario autenticado
     const { data: userData } = await clientSupaBase.auth.getUser();
     const userId = userData?.user?.id;
@@ -175,7 +166,8 @@ function App() {
       {
         ...trip,
         owner_id: userId,
-        done: false
+        date: trip.date || new Date().toISOString(),
+        done: trip.done ?? 'pending'
       }
     ]);
     // Si no hay error, volver a hacer fetch de los viajes
@@ -234,6 +226,10 @@ function App() {
 
   return (
     <Routes>
+            <Route
+              path="/costumer"
+              element={<CostumerView />}
+            />
       <Route
         path="/login"
         element={

@@ -11,8 +11,13 @@ interface EarningsReportProps {
 export default function EarningsReport({ trips, expenses, settings }: EarningsReportProps) {
   const [viewMode, setViewMode] = useState<'daily' | 'monthly'>('daily');
 
+  const resolveTripDate = (trip: Trip) => trip.date || trip.created_at || '';
+
   const calculateDailyEarnings = (date: string) => {
-    const dayTrips = trips.filter(trip => trip.date === date && trip.done === true);
+    const dayTrips = trips.filter(trip => {
+      const tripDate = resolveTripDate(trip);
+      return tripDate.startsWith(date) && trip.done === 'completed';
+    });
     const dayExpenses = expenses.filter(exp => exp.date === date);
 
     const income = dayTrips.reduce((sum, trip) => sum + trip.price, 0);
@@ -23,10 +28,13 @@ export default function EarningsReport({ trips, expenses, settings }: EarningsRe
 
   const calculateMonthlyEarnings = (year: number, month: number) => {
     const monthTrips = trips.filter(trip => {
-      const tripDate = new Date(trip.date);
+      const dateValue = resolveTripDate(trip);
+      if (!dateValue) return false;
+      const tripDate = new Date(dateValue);
+      if (Number.isNaN(tripDate.getTime())) return false;
       return tripDate.getFullYear() === year &&
              tripDate.getMonth() === month &&
-             trip.done === true;
+             trip.done === 'completed';
     });
 
     const monthExpenses = expenses.filter(exp => {

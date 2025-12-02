@@ -5,7 +5,7 @@ import { clientSupaBase } from '../supabase/client';
 
 interface AddTripModalProps {
   onClose: () => void;
-  onAdd: (trip: Omit<Trip, 'id' | 'date'>) => void;
+  onAdd: (trip: Omit<Trip, 'id' | 'owner_id' | 'created_at'>) => void;
 }
 
 export default function AddTripModal({ onClose, onAdd }: AddTripModalProps) {
@@ -20,7 +20,7 @@ export default function AddTripModal({ onClose, onAdd }: AddTripModalProps) {
       name,
       address,
       price: parseFloat(price),
-      done: false
+      done: 'pending'
     });
     onClose();
   };
