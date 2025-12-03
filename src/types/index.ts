@@ -4,7 +4,7 @@ export interface Trip {
   id: number;
   owner_id: string;
   name: string;
-  address: string;
+  address?: string; // Solo para compatibilidad del frontend, no se usa en BD
   price?: number;
   done: TripStatus;
   date?: string;

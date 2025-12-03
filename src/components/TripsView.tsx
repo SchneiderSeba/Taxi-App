@@ -21,7 +21,7 @@ export default function TripsView({ trips, onAddTrip, onUpdateTripStatus, dailyE
   const pendingTrips = todayTrips.filter(trip => trip.done === 'pending');
   const cancelledTrips = todayTrips.filter(trip => trip.done === 'cancelled');
 
-  const totalIncome = completedTrips.reduce((sum, trip) => sum + trip.price, 0);
+  const totalIncome = completedTrips.reduce((sum, trip) => sum + (trip.price || 0), 0);
   const netEarnings = totalIncome - dailyExpenses;
 
   return (

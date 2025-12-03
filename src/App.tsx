@@ -161,16 +161,27 @@ function App() {
     const { data: userData } = await clientSupaBase.auth.getUser();
     const userId = userData?.user?.id;
     if (!userId) return;
+    
     // Insertar en Supabase con owner_id
-    const { error } = await clientSupaBase.from('Trips').insert([
-      {
-        name: trip.name,
-        address: trip.address,
-        price: trip.price,
-        done: trip.done ?? 'pending',
-        owner_id: userId
-      }
-    ]);
+    // Si el trip tiene 'address', lo usamos como 'destination'
+    const payload: any = {
+      name: trip.name,
+      price: trip.price,
+      done: trip.done ?? 'pending',
+      owner_id: userId
+    };
+    
+    // Si viene de AddTripModal (tiene address), usar address como destination
+    if (trip.address) {
+      payload.destination = trip.address;
+    }
+    
+    // Si viene de CostumerView (tiene pickup y destination), usarlos directamente
+    if (trip.pickup) payload.pickup = trip.pickup;
+    if (trip.destination) payload.destination = trip.destination;
+    
+    const { error } = await clientSupaBase.from('Trips').insert([payload]);
+    
     // Si no hay error, volver a hacer fetch de los viajes
     if (!error) {
       const { data: tripsData, error: tripsError } = await clientSupaBase
@@ -179,8 +190,9 @@ function App() {
         .eq('owner_id', userId);
       if (!tripsError && tripsData) {
         setTrips(tripsData);
-        // setRefresh(!refresh);
       }
+    } else {
+      console.error('Error inserting trip:', error);
     }
   };
 

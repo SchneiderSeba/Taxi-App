@@ -1,7 +1,6 @@
 import { X } from 'lucide-react';
 import { useState } from 'react';
 import { Trip } from '../types';
-import { clientSupaBase } from '../supabase/client';
 
 interface AddTripModalProps {
   onClose: () => void;
