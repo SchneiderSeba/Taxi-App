@@ -40,9 +40,9 @@ export default function Login({ onLogin }: LoginProps) {
         email: registerEmail,
         options: {
           //Para Produccion
-          emailRedirectTo: 'https://taxi-app-production.up.railway.app/login'
+          // emailRedirectTo: 'https://taxi-app-production.up.railway.app/login'
           //Para Desarrollo
-          // emailRedirectTo: 'http://localhost:5174/login'
+          emailRedirectTo: 'http://localhost:5174/login'
         },
       });
       if (error) {

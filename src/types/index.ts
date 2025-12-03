@@ -9,6 +9,7 @@ export interface Trip {
   done: TripStatus;
   date?: string;
   created_at?: string;
+  customer_id?: string;
 }
 
 export interface Expense {
