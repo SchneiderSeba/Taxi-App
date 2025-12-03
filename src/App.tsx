@@ -164,10 +164,11 @@ function App() {
     // Insertar en Supabase con owner_id
     const { error } = await clientSupaBase.from('Trips').insert([
       {
-        ...trip,
-        owner_id: userId,
-        date: trip.date || new Date().toISOString(),
-        done: trip.done ?? 'pending'
+        name: trip.name,
+        address: trip.address,
+        price: trip.price,
+        done: trip.done ?? 'pending',
+        owner_id: userId
       }
     ]);
     // Si no hay error, volver a hacer fetch de los viajes

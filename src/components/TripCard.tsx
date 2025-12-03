@@ -1,5 +1,5 @@
 import { type FC, type ElementType, useState } from 'react';
-import { MapPin, DollarSign, CheckCircle, Clock, XCircle, Edit2 } from 'lucide-react';
+import { MapPin, DollarSign, CheckCircle, Clock, XCircle, Edit2, ArrowRightToLine } from 'lucide-react';
 import { Trip } from '../types';
 import { clientSupaBase } from '../supabase/client';
 
@@ -117,7 +117,15 @@ const TripCard: FC<TripCardProps> = ({ trip, onUpdateStatus }) => {
 
           <div className="flex items-center gap-2 text-gray-600 dark:text-gray-300 mb-2">
             <MapPin className="w-4 h-4" />
-            <span className="text-sm">{trip.address}</span>
+            <span className="text-sm inline-flex items-center gap-2">
+              {trip.address || trip.pickup}
+              {trip.pickup && trip.destination && (
+                <>
+                  <ArrowRightToLine className="w-4 h-4" />
+                  {trip.destination}
+                </>
+              )}
+            </span>
           </div>
 
           <div className="flex items-center gap-2 text-emerald-600 dark:text-emerald-300 font-semibold">

@@ -10,6 +10,8 @@ export interface Trip {
   date?: string;
   created_at?: string;
   customer_id?: string;
+  pickup?: string;
+  destination?: string;
 }
 
 export interface Expense {
