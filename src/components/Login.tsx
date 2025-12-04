@@ -3,12 +3,8 @@ import { useState, useEffect } from 'react';
 import { clientSupaBase } from '../supabase/client';
 import { useNavigate } from 'react-router-dom';
 
-interface LoginProps {
-  onLogin: () => void;
-}
 
-
-export default function Login({ onLogin }: LoginProps) {
+export default function Login() {
   const [registerEmail, setRegisterEmail] = useState('');
   const [registerError, setRegisterError] = useState('');
   const [registerSuccess, setRegisterSuccess] = useState('');
@@ -56,6 +52,22 @@ export default function Login({ onLogin }: LoginProps) {
     }
   };
 
+  const handleRegisterByGoogle = async () => {
+    try {
+      await clientSupaBase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          //Para Produccion
+          redirectTo: 'https://taxi-app-production.up.railway.app/login'
+          //Para Desarrollo
+          // redirectTo: 'http://localhost:5174/login'
+        }
+      });
+    } catch (error) {
+      console.error('Error al iniciar sesión con Google:', error);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-white to-teal-50 dark:from-gray-900 dark:via-gray-950 dark:to-gray-900 flex items-center justify-center p-4 transition-colors">
       <div className="max-w-md w-full">
@@ -73,7 +85,7 @@ export default function Login({ onLogin }: LoginProps) {
           <h2 className="text-2xl font-semibold text-gray-900 dark:text-white mb-6">Iniciar sesión</h2>
 
           <button
-            onClick={onLogin}
+            onClick={handleRegisterByGoogle}
             className="w-full flex items-center justify-center gap-3 bg-white dark:bg-gray-800 border-2 border-gray-300 dark:border-gray-700 rounded-lg px-6 py-3.5 text-gray-700 dark:text-gray-200 font-medium hover:bg-gray-50 dark:hover:bg-gray-700 hover:border-gray-400 dark:hover:border-gray-500 transition-all duration-200 hover:shadow-md"
           >
             <Chrome className="w-5 h-5" />

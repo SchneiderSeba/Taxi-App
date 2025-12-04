@@ -33,6 +33,7 @@ interface RequestStatusCard {
   status: Trip['done'];
   customerId: string;
   price?: number;
+  driverAvailable?: boolean;
 }
 
 const initialFormState: TripRequestForm = {
@@ -75,7 +76,12 @@ const CostumerView = () => {
 
   // Load last request when customerId is available
   useEffect(() => {
-    if (!customerId) return;
+    if (!customerId) {
+      console.log('customerId no disponible aún, esperando...');
+      return;
+    }
+
+    console.log('Cargando última solicitud para customerId:', customerId);
 
     const loadLastRequest = async () => {
       const { data: tripData, error } = await clientSupaBase
@@ -86,23 +92,30 @@ const CostumerView = () => {
         .limit(1)
         .single();
 
-      if (!error && tripData) {
+      if (error) {
+        console.log('No se encontró solicitud previa:', error.message);
+        return;
+      }
+
+      if (tripData) {
+        console.log('Solicitud encontrada:', tripData);
         // Get driver name
         const { data: driverData } = await clientSupaBase
           .from('UsersProfile')
-          .select('username')
+          .select('username, displayName, available')
           .eq('owner_id', tripData.owner_id)
           .single();
 
         setLastRequest({
-          driverName: driverData?.username ?? 'Conductor',
+          driverName: driverData?.displayName || driverData?.username || 'Conductor',
           pickup: tripData.pickup,
           destination: tripData.destination,
           preferredTime: tripData.preferred_time || 'N/D',
           createdAt: tripData.created_at,
           status: tripData.done as Trip['done'],
           customerId: customerId,
-          price: tripData.price
+          price: tripData.price,
+          driverAvailable: driverData?.available ?? false
         });
       }
     };
@@ -118,7 +131,7 @@ const CostumerView = () => {
 
       const { data, error: supaError } = await clientSupaBase
         .from('UsersProfile')
-        .select('id, owner_id, username, email, phone, carModel, carPlate, pictureUrl, created_at')
+        .select('id, owner_id, username, email, phone, carModel, carPlate, pictureUrl, created_at, displayName, available')
         .order('created_at', { ascending: false });
 
       if (supaError) {
@@ -132,6 +145,27 @@ const CostumerView = () => {
     };
 
     fetchDrivers();
+
+    // Suscripción en tiempo real a cambios en UsersProfile
+    const subscription = clientSupaBase
+      .channel('drivers-changes')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'UsersProfile'
+        },
+        () => {
+          console.log('Cambio detectado en UsersProfile, recargando conductores...');
+          fetchDrivers();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      subscription.unsubscribe();
+    };
   }, []);
 
   // Poll for trip status updates when there's an active request
@@ -153,7 +187,7 @@ const CostumerView = () => {
         // Get driver name
         const { data: driverData } = await clientSupaBase
           .from('UsersProfile')
-          .select('username')
+          .select('username, displayName, available')
           .eq('owner_id', data.owner_id)
           .single();
 
@@ -180,7 +214,7 @@ const CostumerView = () => {
     if (!search.trim()) return drivers;
     const term = search.toLowerCase();
     return drivers.filter(driver => {
-      const fields = [driver.username, driver.carModel, driver.carPlate, driver.phone].filter(
+      const fields = [driver.username, driver.carModel, driver.carPlate, driver.phone, driver.displayName, driver.available?.toString()].filter(
         (value): value is string => Boolean(value)
       );
       return fields.some(field => field.toLowerCase().includes(term));
@@ -405,7 +439,9 @@ const CostumerView = () => {
               {filteredDrivers.map(driver => (
                 <article
                   key={driver.id}
-                  className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl p-6 shadow-lg flex flex-col"
+                  className={`bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl p-6 shadow-lg flex flex-col ${
+                    !driver.available ? 'opacity-40' : ''
+                  }`}
                 >
                   <div className="flex items-center gap-4 mb-4">
                     <div className="w-14 h-14 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-700 font-bold uppercase">
@@ -416,10 +452,11 @@ const CostumerView = () => {
                       )}
                     </div>
                     <div>
-                      <h3 className="text-xl font-semibold text-gray-900 dark:text-white">{driver.username}</h3>
+                      <h3 className="text-xl font-semibold text-gray-900 dark:text-white">{driver.displayName || driver.username}</h3>
                       <p className="text-sm text-gray-500 flex items-center gap-1">
                         <MapPin className="w-4 h-4" />
-                        Disponible hoy
+                        {driver.available ? 'Disponible hoy' : 'No disponible'}
+                        <span className={`inline-block w-3 h-3 rounded-full ml-2 ${driver.available ? 'bg-green-500' : 'bg-red-500'}`} />
                       </p>
                     </div>
                   </div>
@@ -437,10 +474,15 @@ const CostumerView = () => {
 
                   <button
                     onClick={() => handleOpenRequest(driver)}
-                    className="mt-auto inline-flex items-center justify-center gap-2 w-full py-3 rounded-xl bg-emerald-600 text-white font-semibold hover:bg-emerald-700 focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 dark:focus:ring-offset-gray-900 transition-colors"
+                    disabled={!driver.available}
+                    className={`mt-auto inline-flex items-center justify-center gap-2 w-full py-3 rounded-xl font-semibold focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 dark:focus:ring-offset-gray-900 transition-colors ${
+                      driver.available
+                        ? 'bg-emerald-600 text-white hover:bg-emerald-700 cursor-pointer'
+                        : 'bg-gray-300 dark:bg-gray-700 text-gray-500 dark:text-gray-400 cursor-not-allowed'
+                    }`}
                   >
                     <Send className="w-4 h-4" />
-                    Solicitar viaje
+                    {driver.available ? 'Solicitar viaje' : 'No disponible'}
                   </button>
                 </article>
               ))}

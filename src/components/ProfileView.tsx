@@ -43,6 +43,11 @@ export default function ProfileView({ settings, onUpdateSettings, expenses, onAd
       placeholder: 'Pega la URL de tu imagen',
       helper: 'Puedes dejar vacío para volver al avatar por defecto.',
     },
+    available: {
+      title: 'disponibilidad',
+      placeholder: 'Escribe Sí o No',
+      helper: 'Indica si estás disponible para recibir viajes (Sí o No).',
+    },
   };
 
   useEffect(() => {
@@ -92,7 +97,14 @@ export default function ProfileView({ settings, onUpdateSettings, expenses, onAd
   const openEditModal = (field: EditableProfileField) => {
     if (!userProfile) return;
     setModalField(field);
-    setModalValue(userProfile[field] ?? '');
+    
+    // Para el campo 'available', convertir booleano a string "Sí"/"No"
+    if (field === 'available') {
+      setModalValue(userProfile[field] ? 'Sí' : 'No');
+    } else {
+      setModalValue(userProfile[field] ?? '');
+    }
+    
     setIsModalOpen(true);
   };
 
@@ -107,7 +119,15 @@ export default function ProfileView({ settings, onUpdateSettings, expenses, onAd
     if (!userId || !modalField) return;
     setIsSavingField(true);
 
-    const updatedValue = modalValue.trim() || null;
+    let updatedValue: string | boolean | null;
+    
+    // Manejar campo booleano 'available'
+    if (modalField === 'available') {
+      const normalized = modalValue.trim().toLowerCase();
+      updatedValue = normalized === 'sí' || normalized === 'si' || normalized === 'yes' || normalized === 'true';
+    } else {
+      updatedValue = modalValue.trim() || null;
+    }
 
     const { data, error } = await clientSupaBase
       .from('UsersProfile')
@@ -333,28 +353,62 @@ export default function ProfileView({ settings, onUpdateSettings, expenses, onAd
             <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
               Editar {modalConfig.title}
             </h3>
-            <input
-              value={modalValue}
-              onChange={(e) => setModalValue(e.target.value)}
-              className="w-full px-4 py-3 border border-gray-300 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
-              placeholder={modalConfig.placeholder}
-            />
-            {modalField === 'pictureUrl' && modalValue.trim() && (
-              <div className="mt-4">
-                <p className="text-sm text-gray-500 dark:text-gray-400 mb-2">Vista previa:</p>
-                <img
-                  src={modalValue}
-                  alt="Vista previa de perfil"
-                  className="w-32 h-32 object-cover rounded-full border border-gray-200 dark:border-gray-700"
-                  onError={(event) => {
-                    event.currentTarget.style.display = 'none';
-                  }}
-                />
+            
+            {modalField === 'available' ? (
+              <div className="space-y-3">
+                <div className="flex gap-3">
+                  <button
+                    onClick={() => setModalValue('Sí')}
+                    className={`flex-1 px-4 py-3 rounded-lg border-2 font-medium transition-all ${
+                      modalValue === 'Sí'
+                        ? 'border-emerald-600 bg-emerald-50 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300'
+                        : 'border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:border-emerald-400'
+                    }`}
+                  >
+                    ✓ Disponible
+                  </button>
+                  <button
+                    onClick={() => setModalValue('No')}
+                    className={`flex-1 px-4 py-3 rounded-lg border-2 font-medium transition-all ${
+                      modalValue === 'No'
+                        ? 'border-red-600 bg-red-50 text-red-700 dark:bg-red-900/40 dark:text-red-300'
+                        : 'border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:border-red-400'
+                    }`}
+                  >
+                    × No disponible
+                  </button>
+                </div>
+                {modalConfig.helper && (
+                  <p className="text-sm text-gray-500 dark:text-gray-400">{modalConfig.helper}</p>
+                )}
               </div>
+            ) : (
+              <>
+                <input
+                  value={modalValue}
+                  onChange={(e) => setModalValue(e.target.value)}
+                  className="w-full px-4 py-3 border border-gray-300 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
+                  placeholder={modalConfig.placeholder}
+                />
+                {modalField === 'pictureUrl' && modalValue.trim() && (
+                  <div className="mt-4">
+                    <p className="text-sm text-gray-500 dark:text-gray-400 mb-2">Vista previa:</p>
+                    <img
+                      src={modalValue}
+                      alt="Vista previa de perfil"
+                      className="w-32 h-32 object-cover rounded-full border border-gray-200 dark:border-gray-700"
+                      onError={(event) => {
+                        event.currentTarget.style.display = 'none';
+                      }}
+                    />
+                  </div>
+                )}
+                {modalConfig.helper && (
+                  <p className="text-sm text-gray-500 dark:text-gray-400 mt-3">{modalConfig.helper}</p>
+                )}
+              </>
             )}
-            {modalConfig.helper && (
-              <p className="text-sm text-gray-500 dark:text-gray-400 mt-3">{modalConfig.helper}</p>
-            )}
+            
             <div className="flex justify-end gap-3 mt-6">
               <button
                 onClick={handleModalClose}

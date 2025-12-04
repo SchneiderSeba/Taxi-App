@@ -32,12 +32,14 @@ export interface Profile {
   id: number;
   owner_id: string;
   username: string;
+  displayName?: string;
   email: string;
   phone?: string;
   carModel?: string;
   carPlate?: string;
   pictureUrl?: string;
   created_at: string;
+  available?: boolean;
 }
 
-export type ProfileEditableField = 'carModel' | 'carPlate' | 'pictureUrl';
+export type ProfileEditableField = 'carModel' | 'carPlate' | 'pictureUrl' | 'available';

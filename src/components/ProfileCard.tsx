@@ -31,7 +31,7 @@ export default function ProfileCard({ profile, onEditField }: ProfileCardProps) 
           </button>
         </div>
         <div>
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-white">{profile.username}</h2>
+          <h2 className="text-2xl font-bold text-gray-900 dark:text-white">{profile.displayName || profile.username}</h2>
           <p className="text-gray-600 dark:text-gray-300">Email : {profile.email}</p>
           {profile.phone && (
             <p className="text-gray-500 dark:text-gray-400 text-sm">Tel : {profile.phone}</p>
@@ -68,6 +68,15 @@ export default function ProfileCard({ profile, onEditField }: ProfileCardProps) 
           <span className="text-gray-600 dark:text-gray-300">
             {new Date(profile.created_at).toLocaleDateString()}
           </span>
+        </div>
+        
+        <div className="flex items-center gap-2">
+          <span className="font-semibold text-gray-700 dark:text-gray-200">Disponible :</span>
+          <span className="text-gray-600 dark:text-gray-300">{profile.available ? 'Sí' : 'No'}</span>
+          <Pencil
+            onClick={() => onEditField('available')}
+            className="ml-2 w-4 h-4 text-emerald-500 hover:underline cursor-pointer"
+          />
         </div>
       </div>
     </div>
