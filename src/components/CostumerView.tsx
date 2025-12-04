@@ -288,92 +288,94 @@ const CostumerView = () => {
   return (
     <div className={darkMode ? 'dark' : ''}>
       <div className="min-h-screen bg-gradient-to-b from-emerald-50 to-white dark:from-gray-900 dark:to-gray-950">
-        <div className="flex justify-end px-6 pt-6">
+        <div className="flex justify-end px-3 sm:px-6 pt-4 sm:pt-6">
           <button
             type="button"
             onClick={() => setDarkMode(prev => !prev)}
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-100 text-sm font-semibold shadow-sm hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+            className="inline-flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 rounded-full border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-100 text-xs sm:text-sm font-semibold shadow-sm hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors min-h-[40px]"
           >
-            {darkMode ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
-            {darkMode ? 'Modo claro' : 'Modo oscuro'}
+            {darkMode ? <Sun className="w-4 h-4 shrink-0" /> : <Moon className="w-4 h-4 shrink-0" />}
+            <span className="hidden xs:inline">{darkMode ? 'Modo claro' : 'Modo oscuro'}</span>
           </button>
         </div>
 
-        <section className="px-6 pt-16 pb-10 text-center max-w-4xl mx-auto">
-          <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-100 text-emerald-700 text-sm font-semibold mb-4">
-            <Clock className="w-4 h-4" />
+        <section className="px-4 sm:px-6 pt-8 sm:pt-16 pb-6 sm:pb-10 text-center max-w-4xl mx-auto">
+          <span className="inline-flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-1.5 rounded-full bg-emerald-100 text-emerald-700 text-xs sm:text-sm font-semibold mb-3 sm:mb-4">
+            <Clock className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0" />
             Solicita tu viaje sin registrarte
           </span>
-          <h1 className="text-4xl md:text-5xl font-extrabold text-gray-900 dark:text-white mb-4">
+          <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-extrabold text-gray-900 dark:text-white mb-3 sm:mb-4 leading-tight">
             Encuentra conductores de confianza en segundos
           </h1>
-          <p className="text-lg text-gray-600 dark:text-gray-300">
+          <p className="text-sm sm:text-base lg:text-lg text-gray-600 dark:text-gray-300 leading-relaxed">
             Explora la flota disponible, conoce a cada conductor y envía una solicitud de viaje. Tu pedido queda en estado
             "pendiente" hasta que el conductor lo apruebe.
           </p>
           {confirmation && (
-            <div className="mt-6 inline-flex items-center gap-2 bg-emerald-100 text-emerald-800 px-4 py-2 rounded-full text-sm font-semibold">
-              <CheckCircle className="w-4 h-4" />
+            <div className="mt-4 sm:mt-6 inline-flex items-center gap-2 bg-emerald-100 text-emerald-800 px-3 sm:px-4 py-2 rounded-full text-xs sm:text-sm font-semibold">
+              <CheckCircle className="w-4 h-4 shrink-0" />
               {confirmation}
             </div>
           )}
         </section>
 
         {lastRequest && (
-          <section className="px-6 pb-10 max-w-4xl mx-auto">
-            <div className={`bg-white dark:bg-gray-900 border rounded-2xl shadow-md p-6 flex flex-col gap-4 ${
+          <section className="px-4 sm:px-6 pb-6 sm:pb-10 max-w-4xl mx-auto">
+            <div className={`bg-white dark:bg-gray-900 border rounded-xl sm:rounded-2xl shadow-md p-4 sm:p-6 flex flex-col gap-3 sm:gap-4 ${
               lastRequest.status === 'completed' 
                 ? 'border-green-200 dark:border-green-800' 
                 : lastRequest.status === 'cancelled' 
                 ? 'border-red-200 dark:border-red-800' 
                 : 'border-emerald-200 dark:border-emerald-800'
             }`}>
-              <div className="flex items-center justify-between">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
                 <div>
-                  <p className="text-sm text-gray-500">Estado de tu solicitud</p>
-                  <h3 className="text-xl font-semibold text-gray-900 dark:text-white">{lastRequest.driverName}</h3>
+                  <p className="text-xs sm:text-sm text-gray-500">Estado de tu solicitud</p>
+                  <h3 className="text-lg sm:text-xl font-semibold text-gray-900 dark:text-white">{lastRequest.driverName}</h3>
                 </div>
-                {lastRequest.status === 'pending' && (
-                  <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 dark:bg-blue-900/40 text-blue-700 dark:text-blue-200 text-sm font-semibold">
-                    <Clock className="w-4 h-4" />
-                    Pendiente
-                  </span>
-                )}
-                {lastRequest.status === 'completed' && (
-                <>
-                  <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-green-50 dark:bg-green-900/40 text-green-700 dark:text-green-200 text-sm font-semibold">
-                    <CheckCircle className="w-4 h-4" />
-                    Aceptado
-                  </span>
-                  <span className="inline-flex items-center gap-1 text-emerald-600 dark:text-emerald-300 font-semibold">
-                    <DollarSign className="w-5 h-5" />
-                    {lastRequest.price?.toFixed(2)}
-                  </span>
-                </>
-                )}
+                <div className="flex items-center gap-2 sm:gap-3">
+                  {lastRequest.status === 'pending' && (
+                    <span className="inline-flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 py-1 rounded-full bg-blue-50 dark:bg-blue-900/40 text-blue-700 dark:text-blue-200 text-xs sm:text-sm font-semibold">
+                      <Clock className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0" />
+                      Pendiente
+                    </span>
+                  )}
+                  {lastRequest.status === 'completed' && (
+                  <>
+                    <span className="inline-flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 py-1 rounded-full bg-green-50 dark:bg-green-900/40 text-green-700 dark:text-green-200 text-xs sm:text-sm font-semibold">
+                      <CheckCircle className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0" />
+                      Aceptado
+                    </span>
+                    <span className="inline-flex items-center gap-0.5 sm:gap-1 text-emerald-600 dark:text-emerald-300 font-semibold text-sm sm:text-base">
+                      <DollarSign className="w-4 h-4 sm:w-5 sm:h-5 shrink-0" />
+                      {lastRequest.price?.toFixed(2)}
+                    </span>
+                  </>
+                  )}
 
-                {lastRequest.status === 'cancelled' && (
-                  <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-red-50 dark:bg-red-900/40 text-red-700 dark:text-red-200 text-sm font-semibold">
-                    <span className="text-xl leading-none">×</span>
-                    Cancelado
-                  </span>
-                )}
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm text-gray-600 dark:text-gray-300">
-                <div>
-                  <p className="uppercase text-xs text-gray-500 tracking-wide">Origen</p>
-                  <p className="font-semibold text-gray-900 dark:text-white">{lastRequest.pickup}</p>
-                </div>
-                <div>
-                  <p className="uppercase text-xs text-gray-500 tracking-wide">Destino</p>
-                  <p className="font-semibold text-gray-900 dark:text-white">{lastRequest.destination}</p>
-                </div>
-                <div>
-                  <p className="uppercase text-xs text-gray-500 tracking-wide">Horario</p>
-                  <p className="font-semibold text-gray-900 dark:text-white">{lastRequest.preferredTime}</p>
+                  {lastRequest.status === 'cancelled' && (
+                    <span className="inline-flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 py-1 rounded-full bg-red-50 dark:bg-red-900/40 text-red-700 dark:text-red-200 text-xs sm:text-sm font-semibold">
+                      <span className="text-lg sm:text-xl leading-none">×</span>
+                      Cancelado
+                    </span>
+                  )}
                 </div>
               </div>
-              <p className="text-sm text-gray-500 dark:text-gray-400">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 text-xs sm:text-sm text-gray-600 dark:text-gray-300">
+                <div>
+                  <p className="uppercase text-[10px] sm:text-xs text-gray-500 tracking-wide">Origen</p>
+                  <p className="font-semibold text-gray-900 dark:text-white mt-0.5">{lastRequest.pickup}</p>
+                </div>
+                <div>
+                  <p className="uppercase text-[10px] sm:text-xs text-gray-500 tracking-wide">Destino</p>
+                  <p className="font-semibold text-gray-900 dark:text-white mt-0.5">{lastRequest.destination}</p>
+                </div>
+                <div className="sm:col-span-2 lg:col-span-1">
+                  <p className="uppercase text-[10px] sm:text-xs text-gray-500 tracking-wide">Horario</p>
+                  <p className="font-semibold text-gray-900 dark:text-white mt-0.5">{lastRequest.preferredTime}</p>
+                </div>
+              </div>
+              <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400">
                 Última actualización: {new Date(lastRequest.createdAt).toLocaleString()}.
                 {lastRequest.status === 'pending' && ' Te avisaremos cuando el conductor confirme o rechace la solicitud.'}
                 {lastRequest.status === 'completed' && ' ¡Tu viaje ha sido aceptado! El conductor se pondrá en contacto contigo.'}
@@ -383,16 +385,16 @@ const CostumerView = () => {
           </section>
         )}
 
-        <section className="px-6 pb-20 max-w-6xl mx-auto">
-          <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl shadow-xl p-6 mb-8">
-            <div className="flex flex-col md:flex-row gap-4 items-center">
-              <div className="flex items-center gap-3 w-full md:w-auto">
-                <div className="w-12 h-12 rounded-full bg-emerald-100 flex items-center justify-center">
-                  <Car className="w-5 h-5 text-emerald-700" />
+        <section className="px-4 sm:px-6 pb-12 sm:pb-20 max-w-6xl mx-auto">
+          <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl sm:rounded-2xl shadow-xl p-4 sm:p-6 mb-6 sm:mb-8">
+            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 items-start sm:items-center">
+              <div className="flex items-center gap-2 sm:gap-3 w-full sm:w-auto">
+                <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-emerald-100 flex items-center justify-center shrink-0">
+                  <Car className="w-4 h-4 sm:w-5 sm:h-5 text-emerald-700" />
                 </div>
                 <div className="text-left">
-                  <p className="text-sm text-gray-500">Conductores verificados</p>
-                  <p className="text-lg font-semibold text-gray-900 dark:text-white">{drivers.length} disponibles</p>
+                  <p className="text-xs sm:text-sm text-gray-500">Conductores verificados</p>
+                  <p className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white">{drivers.length} disponibles</p>
                 </div>
               </div>
 
@@ -401,14 +403,14 @@ const CostumerView = () => {
                   Buscar conductor
                 </label>
                 <div className="relative">
-                  <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+                  <Search className="absolute left-3 sm:left-4 top-1/2 -translate-y-1/2 text-gray-400 shrink-0" size={18} />
                   <input
                     id="driver-search"
                     type="text"
                     value={search}
                     onChange={event => setSearch(event.target.value)}
                     placeholder="Buscar por nombre, auto, patente o teléfono"
-                    className="w-full pl-12 pr-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none"
+                    className="w-full pl-10 sm:pl-12 pr-3 sm:pr-4 py-2.5 sm:py-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none text-sm sm:text-base min-h-[44px]"
                   />
                 </div>
               </div>
@@ -416,72 +418,74 @@ const CostumerView = () => {
           </div>
 
           {loading && (
-            <div className="flex justify-center py-16">
-              <Loader2 className="w-8 h-8 text-emerald-500 animate-spin" />
+            <div className="flex justify-center py-12 sm:py-16">
+              <Loader2 className="w-7 h-7 sm:w-8 sm:h-8 text-emerald-500 animate-spin" />
             </div>
           )}
 
           {!loading && listError && (
-            <div className="bg-red-50 dark:bg-red-900/30 text-red-700 dark:text-red-200 border border-red-200 dark:border-red-800 rounded-xl p-6 text-center">
+            <div className="bg-red-50 dark:bg-red-900/30 text-red-700 dark:text-red-200 border border-red-200 dark:border-red-800 rounded-xl p-4 sm:p-6 text-center text-sm sm:text-base">
               {listError}
             </div>
           )}
 
           {!loading && !listError && filteredDrivers.length === 0 && (
-            <div className="bg-white dark:bg-gray-900 border border-dashed border-gray-300 dark:border-gray-700 rounded-2xl p-10 text-center">
-              <p className="text-lg text-gray-600 dark:text-gray-300">No encontramos conductores con ese criterio.</p>
-              <p className="text-sm text-gray-500 mt-2">Prueba con otro nombre o revisa más tarde.</p>
+            <div className="bg-white dark:bg-gray-900 border border-dashed border-gray-300 dark:border-gray-700 rounded-xl sm:rounded-2xl p-6 sm:p-10 text-center">
+              <p className="text-base sm:text-lg text-gray-600 dark:text-gray-300">No encontramos conductores con ese criterio.</p>
+              <p className="text-xs sm:text-sm text-gray-500 mt-2">Prueba con otro nombre o revisa más tarde.</p>
             </div>
           )}
 
           {!loading && !listError && filteredDrivers.length > 0 && (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
               {filteredDrivers.map(driver => (
                 <article
                   key={driver.id}
-                  className={`bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl p-6 shadow-lg flex flex-col ${
+                  className={`bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl sm:rounded-2xl p-4 sm:p-6 shadow-lg flex flex-col ${
                     !driver.available ? 'opacity-40' : ''
                   }`}
                 >
-                  <div className="flex items-center gap-4 mb-4">
-                    <div className="w-14 h-14 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-700 font-bold uppercase">
+                  <div className="flex items-center gap-3 sm:gap-4 mb-3 sm:mb-4">
+                    <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-700 font-bold uppercase shrink-0">
                       {driver.pictureUrl ? (
                         <img src={driver.pictureUrl} alt={driver.username ?? 'Conductor'} className="w-full h-full rounded-full object-cover" />
                       ) : (
-                        driver.username?.slice(0, 2) || 'DR'
+                        <span className="text-sm sm:text-base">{driver.username?.slice(0, 2) || 'DR'}</span>
                       )}
                     </div>
-                    <div>
-                      <h3 className="text-xl font-semibold text-gray-900 dark:text-white">{driver.displayName || driver.username}</h3>
-                      <p className="text-sm text-gray-500 flex items-center gap-1">
-                        <MapPin className="w-4 h-4" />
-                        {driver.available ? 'Disponible hoy' : 'No disponible'}
-                        <span className={`inline-block w-3 h-3 rounded-full ml-2 ${driver.available ? 'bg-green-500' : 'bg-red-500'}`} />
+                    <div className="min-w-0">
+                      <h3 className="text-base sm:text-xl font-semibold text-gray-900 dark:text-white truncate">{driver.displayName || driver.username}</h3>
+                      <p className="text-xs sm:text-sm text-gray-500 flex items-center gap-1">
+                        <MapPin className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0" />
+                        <span className="truncate">{driver.available ? 'Disponible hoy' : 'No disponible'}</span>
+                        <span className={`inline-block w-2 h-2 sm:w-3 sm:h-3 rounded-full ml-1 shrink-0 ${
+                          driver.available ? 'bg-green-500' : 'bg-red-500'
+                        }`} />
                       </p>
                     </div>
                   </div>
 
-                  <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-4 mb-4 flex-1">
-                    <p className="text-sm text-gray-500 uppercase tracking-wide">Vehículo</p>
-                    <p className="text-lg font-semibold text-gray-900 dark:text-white mt-1">{driver.carModel || 'Modelo no informado'}</p>
-                    <p className="text-sm text-gray-600 dark:text-gray-300">Patente: {driver.carPlate || 'N/D'}</p>
+                  <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-3 sm:p-4 mb-3 sm:mb-4 flex-1">
+                    <p className="text-[10px] sm:text-sm text-gray-500 uppercase tracking-wide">Vehículo</p>
+                    <p className="text-sm sm:text-lg font-semibold text-gray-900 dark:text-white mt-0.5 sm:mt-1 truncate">{driver.carModel || 'Modelo no informado'}</p>
+                    <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-300 truncate">Patente: {driver.carPlate || 'N/D'}</p>
                   </div>
 
-                  <div className="flex items-center gap-2 text-gray-700 dark:text-gray-300 mb-4">
-                    <Phone className="w-4 h-4" />
-                    <span>{driver.phone || 'Sin teléfono'}</span>
+                  <div className="flex items-center gap-2 text-gray-700 dark:text-gray-300 mb-3 sm:mb-4 text-xs sm:text-sm">
+                    <Phone className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0" />
+                    <span className="truncate">{driver.phone || 'Sin teléfono'}</span>
                   </div>
 
                   <button
                     onClick={() => handleOpenRequest(driver)}
                     disabled={!driver.available}
-                    className={`mt-auto inline-flex items-center justify-center gap-2 w-full py-3 rounded-xl font-semibold focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 dark:focus:ring-offset-gray-900 transition-colors ${
+                    className={`mt-auto inline-flex items-center justify-center gap-1.5 sm:gap-2 w-full py-2.5 sm:py-3 rounded-xl font-semibold focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 dark:focus:ring-offset-gray-900 transition-colors text-sm sm:text-base min-h-[44px] ${
                       driver.available
                         ? 'bg-emerald-600 text-white hover:bg-emerald-700 cursor-pointer'
                         : 'bg-gray-300 dark:bg-gray-700 text-gray-500 dark:text-gray-400 cursor-not-allowed'
                     }`}
                   >
-                    <Send className="w-4 h-4" />
+                    <Send className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0" />
                     {driver.available ? 'Solicitar viaje' : 'No disponible'}
                   </button>
                 </article>
@@ -493,7 +497,7 @@ const CostumerView = () => {
 
       {selectedDriver && (
         <div 
-          className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-50 overflow-y-auto"
+          className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4 z-50 overflow-y-auto"
           onClick={(e) => {
             // Cerrar si se hace clic en el fondo
             if (e.target === e.currentTarget) {
@@ -501,24 +505,24 @@ const CostumerView = () => {
             }
           }}
         >
-          <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-2xl max-w-lg w-full my-8">
-            <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-800">
+          <div className="bg-white dark:bg-gray-900 rounded-xl sm:rounded-2xl shadow-2xl max-w-lg w-full my-4 sm:my-8">
+            <div className="flex items-center justify-between p-4 sm:p-6 border-b border-gray-200 dark:border-gray-800">
               <div>
-                <p className="text-sm text-gray-500">Solicitar viaje con</p>
-                <h3 className="text-xl font-semibold text-gray-900 dark:text-white">{selectedDriver.displayName || selectedDriver.username}</h3>
+                <p className="text-xs sm:text-sm text-gray-500">Solicitar viaje con</p>
+                <h3 className="text-base sm:text-xl font-semibold text-gray-900 dark:text-white truncate">{selectedDriver.displayName || selectedDriver.username}</h3>
               </div>
               <button
                 type="button"
                 onClick={() => setSelectedDriver(null)}
-                className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 text-3xl leading-none w-8 h-8 flex items-center justify-center"
+                className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 text-2xl sm:text-3xl leading-none w-8 h-8 flex items-center justify-center shrink-0 min-h-[44px] min-w-[44px]"
               >
                 ×
               </button>
             </div>
 
-            <form onSubmit={handleSubmitRequest} className="p-6 space-y-4">
+            <form onSubmit={handleSubmitRequest} className="p-4 sm:p-6 space-y-3 sm:space-y-4">
               <div>
-                <label htmlFor="passengerName" className="text-sm font-semibold text-gray-700 dark:text-gray-200">Nombre y apellido *</label>
+                <label htmlFor="passengerName" className="text-xs sm:text-sm font-semibold text-gray-700 dark:text-gray-200">Nombre y apellido *</label>
                 <input
                   id="passengerName"
                   type="text"
@@ -526,13 +530,13 @@ const CostumerView = () => {
                   onChange={event => handleChange('passengerName', event.target.value)}
                   required
                   autoComplete="name"
-                  className="mt-1 w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-base"
+                  className="mt-1 w-full px-3 sm:px-4 py-2.5 sm:py-3 rounded-xl border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-sm sm:text-base min-h-[44px]"
                   placeholder="Ej: Carla Gómez"
                 />
               </div>
 
               <div>
-                <label htmlFor="pickup" className="text-sm font-semibold text-gray-700 dark:text-gray-200">Punto de partida *</label>
+                <label htmlFor="pickup" className="text-xs sm:text-sm font-semibold text-gray-700 dark:text-gray-200">Punto de partida *</label>
                 <input
                   id="pickup"
                   type="text"
@@ -540,13 +544,13 @@ const CostumerView = () => {
                   onChange={event => handleChange('pickup', event.target.value)}
                   required
                   autoComplete="street-address"
-                  className="mt-1 w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-base"
+                  className="mt-1 w-full px-3 sm:px-4 py-2.5 sm:py-3 rounded-xl border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-sm sm:text-base min-h-[44px]"
                   placeholder="Dirección exacta"
                 />
               </div>
 
               <div>
-                <label htmlFor="destination" className="text-sm font-semibold text-gray-700 dark:text-gray-200">Destino *</label>
+                <label htmlFor="destination" className="text-xs sm:text-sm font-semibold text-gray-700 dark:text-gray-200">Destino *</label>
                 <input
                   id="destination"
                   type="text"
@@ -554,55 +558,55 @@ const CostumerView = () => {
                   onChange={event => handleChange('destination', event.target.value)}
                   required
                   autoComplete="street-address"
-                  className="mt-1 w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-base"
+                  className="mt-1 w-full px-3 sm:px-4 py-2.5 sm:py-3 rounded-xl border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-sm sm:text-base min-h-[44px]"
                   placeholder="Ciudad o dirección"
                 />
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                 <div>
-                  <label htmlFor="phone" className="text-sm font-semibold text-gray-700 dark:text-gray-200">Teléfono de contacto</label>
+                  <label htmlFor="phone" className="text-xs sm:text-sm font-semibold text-gray-700 dark:text-gray-200">Teléfono de contacto</label>
                   <input
                     id="phone"
                     type="tel"
                     value={form.phone}
                     onChange={event => handleChange('phone', event.target.value)}
                     autoComplete="tel"
-                    className="mt-1 w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-base"
+                    className="mt-1 w-full px-3 sm:px-4 py-2.5 sm:py-3 rounded-xl border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-sm sm:text-base min-h-[44px]"
                     placeholder="Con código de área"
                   />
                 </div>
                 <div>
-                  <label htmlFor="preferredTime" className="text-sm font-semibold text-gray-700 dark:text-gray-200">Horario preferido</label>
+                  <label htmlFor="preferredTime" className="text-xs sm:text-sm font-semibold text-gray-700 dark:text-gray-200">Horario preferido</label>
                   <input
                     id="preferredTime"
                     type="text"
                     value={form.preferredTime}
                     onChange={event => handleChange('preferredTime', event.target.value)}
-                    className="mt-1 w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-base"
+                    className="mt-1 w-full px-3 sm:px-4 py-2.5 sm:py-3 rounded-xl border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-sm sm:text-base min-h-[44px]"
                     placeholder="Ej: Mañana 8:00"
                   />
                 </div>
               </div>
 
               {formError && (
-                <p className="text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg px-3 py-2">{formError}</p>
+                <p className="text-xs sm:text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg px-2.5 sm:px-3 py-2">{formError}</p>
               )}
 
-              <div className="flex gap-3 pt-2">
+              <div className="flex gap-2 sm:gap-3 pt-2">
                 <button
                   type="button"
                   onClick={() => setSelectedDriver(null)}
-                  className="flex-1 px-5 py-3 rounded-xl border border-gray-300 text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800 font-medium text-base min-h-[48px]"
+                  className="flex-1 px-3 sm:px-5 py-2.5 sm:py-3 rounded-xl border border-gray-300 text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800 font-medium text-sm sm:text-base min-h-[48px]"
                 >
                   Cancelar
                 </button>
                 <button
                   type="submit"
                   disabled={submitting}
-                  className="flex-1 px-5 py-3 rounded-xl bg-emerald-600 text-white font-semibold hover:bg-emerald-700 disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2 text-base min-h-[48px]"
+                  className="flex-1 px-3 sm:px-5 py-2.5 sm:py-3 rounded-xl bg-emerald-600 text-white font-semibold hover:bg-emerald-700 disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-1.5 sm:gap-2 text-sm sm:text-base min-h-[48px]"
                 >
-                  {submitting ? <Loader2 className="w-5 h-5 animate-spin" /> : <Send className="w-5 h-5" />}
+                  {submitting ? <Loader2 className="w-4 h-4 sm:w-5 sm:h-5 animate-spin shrink-0" /> : <Send className="w-4 h-4 sm:w-5 sm:h-5 shrink-0" />}
                   {submitting ? 'Enviando...' : 'Confirmar solicitud'}
                 </button>
               </div>
