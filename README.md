@@ -233,8 +233,7 @@ Podés usarlo, modificarlo y distribuirlo libremente.
 ## 🚀 Próximas mejoras
 
 - 📧 **Notificaciones push** - Alertas para conductores cuando llegan solicitudes
-- 🔌 **Modo offline** - Trabajo sin conexión con sincronización posterior
-- 📄 **Exportación de reportes PDF** - Descargar reportes de ganancias mensuales
+- 🔌 **Integracios con MercadoPago** - Permite pagar a los Drivers con mercado pago
 - 📈 **Dashboard avanzado con gráficos** - Visualización de tendencias y estadísticas
 - 🗺️ **Integración con mapas** - Google Maps para rutas y distancias
 - ⭐ **Sistema de calificaciones** - Rating de conductores por clientes
