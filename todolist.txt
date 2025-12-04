@@ -13,7 +13,7 @@ VISTA DRIVER
 * Perfil , Agregar mas Datos por driver ✅
     * Tabla Users ✅
 
-* Auth con OAuth y Google
+* Auth con OAuth y Google ✅
 
 * Recibir solicitudes de Viajes ✅
     * Aceptar , Rechazar ✅

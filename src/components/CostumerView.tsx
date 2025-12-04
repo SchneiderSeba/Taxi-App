@@ -492,17 +492,25 @@ const CostumerView = () => {
       </div>
 
       {selectedDriver && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-          <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-2xl max-w-lg w-full">
+        <div 
+          className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-50 overflow-y-auto"
+          onClick={(e) => {
+            // Cerrar si se hace clic en el fondo
+            if (e.target === e.currentTarget) {
+              setSelectedDriver(null);
+            }
+          }}
+        >
+          <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-2xl max-w-lg w-full my-8">
             <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-800">
               <div>
                 <p className="text-sm text-gray-500">Solicitar viaje con</p>
-                <h3 className="text-xl font-semibold text-gray-900 dark:text-white">{selectedDriver.username}</h3>
+                <h3 className="text-xl font-semibold text-gray-900 dark:text-white">{selectedDriver.displayName || selectedDriver.username}</h3>
               </div>
               <button
                 type="button"
                 onClick={() => setSelectedDriver(null)}
-                className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200"
+                className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 text-3xl leading-none w-8 h-8 flex items-center justify-center"
               >
                 ×
               </button>
@@ -510,59 +518,68 @@ const CostumerView = () => {
 
             <form onSubmit={handleSubmitRequest} className="p-6 space-y-4">
               <div>
-                <label className="text-sm font-semibold text-gray-700 dark:text-gray-200">Nombre y apellido *</label>
+                <label htmlFor="passengerName" className="text-sm font-semibold text-gray-700 dark:text-gray-200">Nombre y apellido *</label>
                 <input
+                  id="passengerName"
                   type="text"
                   value={form.passengerName}
                   onChange={event => handleChange('passengerName', event.target.value)}
                   required
-                  className="mt-1 w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                  autoComplete="name"
+                  className="mt-1 w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-base"
                   placeholder="Ej: Carla Gómez"
                 />
               </div>
 
               <div>
-                <label className="text-sm font-semibold text-gray-700 dark:text-gray-200">Punto de partida *</label>
+                <label htmlFor="pickup" className="text-sm font-semibold text-gray-700 dark:text-gray-200">Punto de partida *</label>
                 <input
+                  id="pickup"
                   type="text"
                   value={form.pickup}
                   onChange={event => handleChange('pickup', event.target.value)}
                   required
-                  className="mt-1 w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                  autoComplete="street-address"
+                  className="mt-1 w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-base"
                   placeholder="Dirección exacta"
                 />
               </div>
 
               <div>
-                <label className="text-sm font-semibold text-gray-700 dark:text-gray-200">Destino *</label>
+                <label htmlFor="destination" className="text-sm font-semibold text-gray-700 dark:text-gray-200">Destino *</label>
                 <input
+                  id="destination"
                   type="text"
                   value={form.destination}
                   onChange={event => handleChange('destination', event.target.value)}
                   required
-                  className="mt-1 w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                  autoComplete="street-address"
+                  className="mt-1 w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-base"
                   placeholder="Ciudad o dirección"
                 />
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="text-sm font-semibold text-gray-700 dark:text-gray-200">Teléfono de contacto</label>
+                  <label htmlFor="phone" className="text-sm font-semibold text-gray-700 dark:text-gray-200">Teléfono de contacto</label>
                   <input
+                    id="phone"
                     type="tel"
                     value={form.phone}
                     onChange={event => handleChange('phone', event.target.value)}
-                    className="mt-1 w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                    autoComplete="tel"
+                    className="mt-1 w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-base"
                     placeholder="Con código de área"
                   />
                 </div>
                 <div>
-                  <label className="text-sm font-semibold text-gray-700 dark:text-gray-200">Horario preferido</label>
+                  <label htmlFor="preferredTime" className="text-sm font-semibold text-gray-700 dark:text-gray-200">Horario preferido</label>
                   <input
+                    id="preferredTime"
                     type="text"
                     value={form.preferredTime}
                     onChange={event => handleChange('preferredTime', event.target.value)}
-                    className="mt-1 w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                    className="mt-1 w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-base"
                     placeholder="Ej: Mañana 8:00"
                   />
                 </div>
@@ -576,14 +593,14 @@ const CostumerView = () => {
                 <button
                   type="button"
                   onClick={() => setSelectedDriver(null)}
-                  className="flex-1 px-5 py-3 rounded-xl border border-gray-300 text-gray-700 dark:text-gray-200 hover:bg-gray-50"
+                  className="flex-1 px-5 py-3 rounded-xl border border-gray-300 text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800 font-medium text-base min-h-[48px]"
                 >
                   Cancelar
                 </button>
                 <button
                   type="submit"
                   disabled={submitting}
-                  className="flex-1 px-5 py-3 rounded-xl bg-emerald-600 text-white font-semibold hover:bg-emerald-700 disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                  className="flex-1 px-5 py-3 rounded-xl bg-emerald-600 text-white font-semibold hover:bg-emerald-700 disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2 text-base min-h-[48px]"
                 >
                   {submitting ? <Loader2 className="w-5 h-5 animate-spin" /> : <Send className="w-5 h-5" />}
                   {submitting ? 'Enviando...' : 'Confirmar solicitud'}
