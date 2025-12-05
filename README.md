@@ -5,9 +5,9 @@ Incluye dos interfaces: una para **conductores** (con autenticación) y otra par
 
 ---
 
-## 🌐 Pruébalo en vivo como Conductor: [Taxi App](https://taxi-app-production.up.railway.app/)
+## 🌐 Pruébalo en vivo como Conductor: <a href="https://taxi-app-production.up.railway.app/" target="_blank">Taxi App</a>
 
-## 🌎 Pruebalo en vivo como Cliente: [Taxi App /Customer](https://taxi-app-production.up.railway.app/costumer)
+## 🌎 Pruebalo en vivo como Cliente: <a href="https://taxi-app-production.up.railway.app/costumer" target="_blank">Taxi App /Customer</a>
 
 
 ## 📌 Características principales
@@ -285,8 +285,8 @@ Puedes usarlo, modificarlo y distribuirlo libremente.
 ## 📧 Contacto
 
 **Desarrollador**: Schneider Sebastian  
-**GitHub**: [@SchneiderSeba](https://github.com/SchneiderSeba)  
-**Link del Proyecto**: [https://github.com/SchneiderSeba/Taxi-App](https://github.com/SchneiderSeba/Taxi-App)
+**GitHub**: <a href="https://github.com/SchneiderSeba" target="_blank">@SchneiderSeba</a>  
+**Link del Proyecto**: <a href="https://github.com/SchneiderSeba/Taxi-App" target="_blank">https://github.com/SchneiderSeba/Taxi-App</a>
 
 ---
 
