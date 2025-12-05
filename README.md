@@ -1,50 +1,144 @@
+<div align="center">
+
 # 🚖 Taxi App
 
-Taxi App es una aplicación completa desarrollada para ayudar a conductores de taxi a gestionar su trabajo diario y conectar con clientes de forma directa.  
-Incluye dos interfaces: una para **conductores** (con autenticación) y otra para **clientes** (sin registro), permitiendo solicitar viajes, gestionar ganancias y controlar gastos operativos.
+<p align="center">
+  <img src="https://img.shields.io/badge/React-18-61DAFB?style=for-the-badge&logo=react&logoColor=white" alt="React"/>
+  <img src="https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white" alt="TypeScript"/>
+  <img src="https://img.shields.io/badge/Supabase-3ECF8E?style=for-the-badge&logo=supabase&logoColor=white" alt="Supabase"/>
+  <img src="https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white" alt="Tailwind"/>
+</p>
+
+<p align="center">
+  <strong>Aplicación completa para gestión de viajes de taxi</strong><br/>
+  Conecta conductores con clientes de forma directa y eficiente
+</p>
+
+<p align="center">
+  <a href="https://taxi-app-production.up.railway.app/" target="_blank">
+    <img src="https://img.shields.io/badge/🚗_Demo_Conductor-Ver_App-10B981?style=for-the-badge" alt="Demo Conductor"/>
+  </a>
+  <a href="https://taxi-app-production.up.railway.app/costumer" target="_blank">
+    <img src="https://img.shields.io/badge/👤_Demo_Cliente-Ver_App-3B82F6?style=for-the-badge" alt="Demo Cliente"/>
+  </a>
+</p>
+
+</div>
 
 ---
-
-## 🌐 Pruébalo en vivo como Conductor: <a href="https://taxi-app-production.up.railway.app/" target="_blank">Taxi App</a>
-
-## 🌎 Pruebalo en vivo como Cliente: <a href="https://taxi-app-production.up.railway.app/costumer" target="_blank">Taxi App /Customer</a>
-
 
 ## 📌 Características principales
 
-### Para Conductores (Autenticados)
-- ✨ **Autenticación con Google OAuth** - Inicio de sesión rápido y seguro
-- 🚕 **Gestión completa de viajes** - Registro, aceptación y cancelación de viajes
-- 💰 **Control de ingresos en tiempo real** - Seguimiento de ganancias por viaje
-- 📉 **Registro de gastos operativos** - Combustible, mantenimiento, peajes, etc.
-- 📊 **Dashboard con estadísticas** - Resumen visual de ganancias netas vs. gastos
-- 🧾 **Historial completo de operaciones** - Todas tus transacciones organizadas
-- 👤 **Perfil personalizable** - Avatar, modelo de auto, patente, disponibilidad
-- 🔔 **Actualizaciones en tiempo real** - Supabase Realtime para nuevas solicitudes
-- 📱 **Diseño responsive** - Optimizado para móviles, tablets y desktop
+<table>
+<tr>
+<td width="50%" valign="top">
 
-### Para Clientes (Sin Registro)
-- 🔍 **Exploración de conductores disponibles** - Lista completa con información detallada
-- 🚗 **Solicitud de viajes sin registro** - Sistema anónimo con customer ID único
-- 📍 **Seguimiento de solicitud en tiempo real** - Ver estado: pendiente/aceptado/cancelado
-- 💵 **Ver precio del viaje aprobado** - Transparencia total en el costo
-- 🌙 **Modo oscuro** - Interfaz adaptable para cualquier hora del día
-- 🔒 **Privacidad garantizada** - Sin necesidad de crear cuenta
+### 🚗 Para Conductores (Autenticados)
+
+- ✨ **Autenticación con Google OAuth**  
+  Inicio de sesión rápido y seguro
+  
+- 🚕 **Gestión completa de viajes**  
+  Registro, aceptación y cancelación
+  
+- 💰 **Control de ingresos en tiempo real**  
+  Seguimiento de ganancias por viaje
+  
+- 📉 **Registro de gastos operativos**  
+  Combustible, mantenimiento, peajes
+  
+- 📊 **Dashboard con estadísticas**  
+  Ganancias netas vs. gastos
+  
+- 👤 **Perfil personalizable**  
+  Avatar, vehículo, disponibilidad
+  
+- 🔔 **Actualizaciones en tiempo real**  
+  Supabase Realtime
+  
+- 📱 **Diseño responsive**  
+  Móviles, tablets y desktop
+
+</td>
+<td width="50%" valign="top">
+
+### 👥 Para Clientes (Sin Registro)
+
+- 🔍 **Exploración de conductores**  
+  Lista completa con información detallada
+  
+- 🚗 **Solicitud sin registro**  
+  Sistema anónimo con ID único
+  
+- 📍 **Seguimiento en tiempo real**  
+  Estado: pendiente/aceptado/cancelado
+  
+- 💵 **Precio transparente**  
+  Ver costo al aprobar viaje
+  
+- 🌙 **Modo oscuro**  
+  Interfaz adaptable
+  
+- 🔒 **Privacidad garantizada**  
+  Sin necesidad de cuenta
+  
+- ⚡ **Experiencia rápida**  
+  Sin complicaciones ni esperas
+  
+- 🎯 **Interfaz intuitiva**  
+  Fácil de usar para todos
+
+</td>
+</tr>
+</table>
 
 ---
 
-## 🛠️ Tecnologías utilizadas
+<div align="center">
+
+## 🛠️ Stack Tecnológico
+
+</div>
+
+<table align="center">
+<tr>
+<td align="center" width="96">
+<img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/react/react-original.svg" width="48" height="48" alt="React" />
+<br>React 18
+</td>
+<td align="center" width="96">
+<img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/typescript/typescript-original.svg" width="48" height="48" alt="TypeScript" />
+<br>TypeScript
+</td>
+<td align="center" width="96">
+<img src="https://www.vectorlogo.zone/logos/tailwindcss/tailwindcss-icon.svg" width="48" height="48" alt="Tailwind" />
+<br>Tailwind CSS
+</td>
+<td align="center" width="96">
+<img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/supabase/supabase-original.svg" width="48" height="48" alt="Supabase" />
+<br>Supabase
+</td>
+<td align="center" width="96">
+<img src="https://vitejs.dev/logo.svg" width="48" height="48" alt="Vite" />
+<br>Vite
+</td>
+</tr>
+</table>
+
+<div align="center">
 
 | Tecnología | Uso |
-|-----------|-----|
+|:----------:|:---:|
 | **React 18 + Vite** | Interfaz de usuario moderna y rápida |
 | **TypeScript** | Tipado estricto para mejor mantenimiento |
 | **React Router DOM** | Navegación entre vistas |
 | **Tailwind CSS** | Diseño responsive y modo oscuro |
 | **Supabase Auth** | Google OAuth y Magic Link |
-| **Supabase Database (PostgreSQL)** | Base de datos relacional con RLS |
+| **Supabase Database** | PostgreSQL con Row Level Security |
 | **Supabase Realtime** | Actualizaciones en tiempo real (WebSockets) |
 | **Lucide React** | Iconos modernos y optimizados |
+
+</div>
 
 ---
 
@@ -127,16 +221,67 @@ Cada conductor tiene un perfil único con:
 
 ---
 
-## 🚧 Estado del proyecto
+<div align="center">
 
-✅ **Versión 2.0 - Completada**  
-Incluye sistema completo de conductores y clientes, autenticación OAuth, actualizaciones en tiempo real y diseño responsive.
+## 🚧 Estado del Proyecto
 
-> Próximas mejoras y optimizaciones se implementarán en futuras versiones.
+<img src="https://img.shields.io/badge/Estado-Completado-10B981?style=for-the-badge" alt="Estado"/>
+<img src="https://img.shields.io/badge/Versión-2.0-3B82F6?style=for-the-badge" alt="Versión"/>
+<img src="https://img.shields.io/badge/Licencia-MIT-F59E0B?style=for-the-badge" alt="Licencia"/>
+
+</div>
+
+**✅ Versión 2.0 - Completada**  
+Sistema completo de conductores y clientes, autenticación OAuth, actualizaciones en tiempo real y diseño responsive.
+
+> 🔮 Próximas mejoras y optimizaciones se implementarán en futuras versiones.
 
 ---
 
-## 📦 Instalación
+<div align="center">
+
+## 🎯 Casos de Uso
+
+</div>
+
+<table>
+<tr>
+<td width="50%" valign="top">
+
+### 🚗 Flujo del Conductor
+
+```mermaid
+graph TD
+    A[Inicia sesión con Google] --> B[Configura perfil y vehículo]
+    B --> C[Establece disponibilidad]
+    C --> D[Recibe solicitudes en tiempo real]
+    D --> E{Acepta viaje?}
+    E -->|Sí| F[Establece precio]
+    E -->|No| G[Rechaza solicitud]
+    F --> H[Registra gastos]
+    H --> I[Visualiza ganancias netas]
+```
+
+</td>
+<td width="50%" valign="top">
+
+### 👤 Flujo del Cliente
+
+```mermaid
+graph TD
+    A[Abre la app] --> B[Explora conductores]
+    B --> C[Selecciona conductor]
+    C --> D[Completa formulario de viaje]
+    D --> E[Envía solicitud]
+    E --> F[Seguimiento en tiempo real]
+    F --> G{Estado?}
+    G -->|Aceptado| H[Ve precio y confirma]
+    G -->|Rechazado| I[Intenta con otro conductor]
+```
+
+</td>
+</tr>
+</table>
 
 1. Clonar el repositorio:
 ```
@@ -157,12 +302,13 @@ VITE_SUPABASE_URL=https://xxxx.supabase.co
 VITE_SUPABASE_ANON_KEY=xxxxx
 ```
 
-4. Configurar Google OAuth en Supabase:
-   - Ir a Authentication > Providers > Google
-   - Configurar Client ID y Client Secret
-   - Agregar redirect URL autorizada
+### 4️⃣ Configurar Google OAuth en Supabase
 
-5. Crear las tablas en Supabase:
+- Ir a **Authentication > Providers > Google**
+- Configurar **Client ID** y **Client Secret**
+- Agregar **redirect URL** autorizada
+
+### 5️⃣ Crear las tablas en Supabase
 
 ```sql
 -- Tabla de perfiles de usuario
@@ -210,10 +356,17 @@ CREATE POLICY "Users can view their own trips" ON Trips
   FOR SELECT USING (auth.uid() = owner_id);
 ```
 
-6. Ejecutar en desarrollo:
+### 6️⃣ Ejecutar en desarrollo
+
 ```bash
 npm run dev
 ```
+
+<div align="center">
+
+**🎉 ¡Listo! La aplicación estará corriendo en `http://localhost:5173`**
+
+</div>
 
 
 ---
@@ -232,46 +385,121 @@ Podés usarlo, modificarlo y distribuirlo libremente.
 
 ---
 
-## 🚀 Próximas mejoras
+<div align="center">
 
-- 📧 **Notificaciones push** - Alertas para conductores cuando llegan solicitudes
-- 🔌 **Integracios con MercadoPago** - Permite pagar a los Drivers con mercado pago
-- 📈 **Dashboard avanzado con gráficos** - Visualización de tendencias y estadísticas
-- 🗺️ **Integración con mapas** - Google Maps para rutas y distancias
-- ⭐ **Sistema de calificaciones** - Rating de conductores por clientes
-- 💬 **Chat en tiempo real** - Comunicación directa conductor-cliente
-- 📱 **PWA (Progressive Web App)** - Instalación como app nativa
+## 🚀 Roadmap - Próximas Mejoras
+
+</div>
+
+<table>
+<tr>
+<td align="center" width="33%">
+
+### 🔔 Notificaciones
+- Push notifications
+- Alertas en tiempo real
+- Recordatorios
+
+</td>
+<td align="center" width="33%">
+
+### 💳 Pagos
+- Integración MercadoPago
+- Pagos en línea
+- Historial de transacciones
+
+</td>
+<td align="center" width="33%">
+
+### 📊 Analytics
+- Dashboard avanzado
+- Gráficos de tendencias
+- Reportes exportables
+
+</td>
+</tr>
+<tr>
+<td align="center">
+
+### 🗺️ Mapas
+- Google Maps
+- Cálculo de rutas
+- Estimación de distancias
+
+</td>
+<td align="center">
+
+### ⭐ Calificaciones
+- Sistema de rating
+- Reviews de clientes
+- Perfiles destacados
+
+</td>
+<td align="center">
+
+### 📱 PWA
+- App instalable
+- Modo offline
+- Notificaciones nativas
+
+</td>
+</tr>
+</table>
 
 ---
 
-## 🎯 Casos de Uso
-
-### Conductor
-1. Inicia sesión con Google
-2. Configura su disponibilidad y datos del vehículo
-3. Recibe solicitudes de viajes en tiempo real
-4. Acepta/rechaza viajes y establece precio
-5. Registra gastos operativos
-6. Visualiza ganancias netas del día/mes
-
-### Cliente
-1. Abre la app sin registrarse
-2. Explora conductores disponibles
-3. Solicita un viaje con pickup y destino
-4. Recibe confirmación con precio
-5. Puede ver el estado en tiempo real
-
----
+<div align="center">
 
 ## 🤝 Contribuciones
 
-Las contribuciones son bienvenidas. Si deseas colaborar:
+<img src="https://img.shields.io/badge/Contribuciones-Bienvenidas-10B981?style=for-the-badge" alt="Contribuciones"/>
 
-1. Fork el proyecto
-2. Crea una rama para tu feature (`git checkout -b feature/AmazingFeature`)
-3. Commit tus cambios (`git commit -m 'Add some AmazingFeature'`)
-4. Push a la rama (`git push origin feature/AmazingFeature`)
-5. Abre un Pull Request
+</div>
+
+¿Quieres colaborar? ¡Genial! Sigue estos pasos:
+
+<table>
+<tr>
+<td align="center" width="20%">
+
+### 1️⃣
+**Fork**  
+🍴 Haz fork del proyecto
+
+</td>
+<td align="center" width="20%">
+
+### 2️⃣
+**Branch**  
+🌿 Crea tu rama  
+`feature/NewFeature`
+
+</td>
+<td align="center" width="20%">
+
+### 3️⃣
+**Commit**  
+💾 Guarda cambios  
+`git commit -m 'Add'`
+
+</td>
+<td align="center" width="20%">
+
+### 4️⃣
+**Push**  
+🚀 Sube tu rama  
+`git push origin`
+
+</td>
+<td align="center" width="20%">
+
+### 5️⃣
+**PR**  
+📬 Abre Pull Request
+
+</td>
+</tr>
+</table>
 
 ---
 
@@ -282,15 +510,37 @@ Puedes usarlo, modificarlo y distribuirlo libremente.
 
 ---
 
+<div align="center">
+
 ## 📧 Contacto
 
-**Desarrollador**: Schneider Sebastian  
-**GitHub**: <a href="https://github.com/SchneiderSeba" target="_blank">@SchneiderSeba</a>  
-**Link del Proyecto**: <a href="https://github.com/SchneiderSeba/Taxi-App" target="_blank">https://github.com/SchneiderSeba/Taxi-App</a>
+<p align="center">
+  <a href="https://github.com/SchneiderSeba" target="_blank">
+    <img src="https://img.shields.io/badge/GitHub-SchneiderSeba-181717?style=for-the-badge&logo=github" alt="GitHub"/>
+  </a>
+  <a href="https://github.com/SchneiderSeba/Taxi-App" target="_blank">
+    <img src="https://img.shields.io/badge/Repositorio-Taxi--App-10B981?style=for-the-badge&logo=github" alt="Repo"/>
+  </a>
+</p>
+
+**Desarrollador**: Schneider Sebastian
+
+</div>
 
 ---
 
-### 💚 Gracias por utilizar **Taxi App**  
-Hecha con dedicación para facilitar el trabajo de quienes mantienen nuestras ciudades en movimiento.
+<div align="center">
+
+### 💚 Gracias por utilizar **Taxi App**
+
+*Hecha con dedicación para facilitar el trabajo de quienes mantienen nuestras ciudades en movimiento* 🚖
+
+<br/>
 
 **⭐ Si te gusta el proyecto, no olvides dejar una estrella en GitHub!**
+
+<br/>
+
+[![MIT License](https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge)](https://opensource.org/licenses/MIT)
+
+</div>
