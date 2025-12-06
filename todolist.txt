@@ -1,10 +1,14 @@
+COORE
+
+* Agregar uso de Contexto ( User , Trips )✅
+
 VISTA CLIENTE
 
 * Lista de Drivers Disponibles en ese Momento 🟨
     * Seleccionar Driver DIsponible y solicitar Viaje ✅
         * Conseguir Persistencia de viajes Solicitados ( nueva columna en Trips (solicitor_id) ) ✅
             * Caundo el Driver acepta y pone precio , aceptar ✅
-                * Calculo de Tiempo Estipado 
+                * Calculo de Tiempo Estimado 
 
 * Pago con Mercado Pago
 

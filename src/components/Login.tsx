@@ -36,9 +36,9 @@ export default function Login() {
         email: registerEmail,
         options: {
           //Para Produccion
-          // emailRedirectTo: 'https://taxi-app-production.up.railway.app/login'
+          emailRedirectTo: 'https://taxi-app-production.up.railway.app/login'
           //Para Desarrollo
-          emailRedirectTo: 'http://localhost:5173/login'
+          // emailRedirectTo: 'http://localhost:5173/login'
         },
       });
       if (error) {
@@ -58,9 +58,9 @@ export default function Login() {
         provider: 'google',
         options: {
           //Para Produccion
-          // redirectTo: 'https://taxi-app-production.up.railway.app/login'
+          redirectTo: 'https://taxi-app-production.up.railway.app/login'
           //Para Desarrollo
-          redirectTo: 'http://localhost:5173/login'
+          // redirectTo: 'http://localhost:5173/login'
         }
       });
     } catch (error) {
