@@ -8,158 +8,162 @@ import CostumerView from './components/CostumerView';
 import { Trip, Expense, UserSettings } from './types';
 
 import { clientSupaBase } from './supabase/client';
+import { TripProvider, useTripContext } from './Context/TripContext';
+import { UserProvider, useUserContext } from './Context/UserContext';
 
 function App() {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  // const [isAuthenticated, setIsAuthenticated] = useState(false);
   // const [refresh, setRefresh] = useState(false);
   const [userName] = useState('Usuario');
   const navigate = useNavigate();
+  const { isAuthenticated, setIsAuthenticated } = useUserContext();
+  const { trips, setTrips } = useTripContext();
 
-  // Crear registro en UserProfile si no existe
-  useEffect(() => {
-    async function ensureUserProfile() {
-      const { data: userData } = await clientSupaBase.auth.getUser();
-      const user = userData?.user;
-      const userDisplayName = user.user_metadata.full_name || user.user_metadata.name || user.email.split("@")[0];
-      if (!user) return;
+  // // Crear registro en UserProfile si no existe
+  // useEffect(() => {
+  //   async function ensureUserProfile() {
+  //     const { data: userData } = await clientSupaBase.auth.getUser();
+  //     const user = userData?.user;
+  //     const userDisplayName = user.user_metadata.full_name || user.user_metadata.name || user.email.split("@")[0];
+  //     if (!user) return;
 
-      const { data: profile, error } = await clientSupaBase
-        .from('UsersProfile')
-        .select('*')
-        .eq('owner_id', user.id)
-        .maybeSingle();
+  //     const { data: profile, error } = await clientSupaBase
+  //       .from('UsersProfile')
+  //       .select('*')
+  //       .eq('owner_id', user.id)
+  //       .maybeSingle();
 
-      if (error && error.code !== 'PGRST116') {
-        console.error('Error checking user profile', error);
-        return;
-      }
+  //     if (error && error.code !== 'PGRST116') {
+  //       console.error('Error checking user profile', error);
+  //       return;
+  //     }
 
-      console.log('userData:', userData);
-      console.log('userDisplayName:', userDisplayName);
+  //     console.log('userData:', userData);
+  //     console.log('userDisplayName:', userDisplayName);
 
-      if (!profile) {
-        const payload = {
-          owner_id: user.id,
-          email: user.email,
-          username: user.email?.split('@')[0] || 'Usuario',
-          displayName: userDisplayName || user.email?.split('@')[0] || 'Usuario',
-          created_at: new Date().toISOString(),
-          carModel: '',
-          carPlate: '',
-          pictureUrl: user.user_metadata?.avatar_url || null
-        };
-        const { error: insertError } = await clientSupaBase
-          .from('UsersProfile')
-          .insert([payload])
-          .select();
-        if (insertError) {
-          console.error('Error inserting user profile', insertError, payload);
-        }
-      } else if (!profile.displayName && userDisplayName) {
-        // Si el perfil existe pero no tiene displayName, actualizarlo
-        const { error: updateError } = await clientSupaBase
-          .from('UsersProfile')
-          .update({ 
-            displayName: userDisplayName,
-            pictureUrl: user.user_metadata?.avatar_url || profile.pictureUrl
-          })
-          .eq('owner_id', user.id);
+  //     if (!profile) {
+  //       const payload = {
+  //         owner_id: user.id,
+  //         email: user.email,
+  //         username: user.email?.split('@')[0] || 'Usuario',
+  //         displayName: userDisplayName || user.email?.split('@')[0] || 'Usuario',
+  //         created_at: new Date().toISOString(),
+  //         carModel: '',
+  //         carPlate: '',
+  //         pictureUrl: user.user_metadata?.avatar_url || null
+  //       };
+  //       const { error: insertError } = await clientSupaBase
+  //         .from('UsersProfile')
+  //         .insert([payload])
+  //         .select();
+  //       if (insertError) {
+  //         console.error('Error inserting user profile', insertError, payload);
+  //       }
+  //     } else if (!profile.displayName && userDisplayName) {
+  //       // Si el perfil existe pero no tiene displayName, actualizarlo
+  //       const { error: updateError } = await clientSupaBase
+  //         .from('UsersProfile')
+  //         .update({ 
+  //           displayName: userDisplayName,
+  //           pictureUrl: user.user_metadata?.avatar_url || profile.pictureUrl
+  //         })
+  //         .eq('owner_id', user.id);
         
-        if (updateError) {
-          console.error('Error updating user profile with displayName', updateError);
-        }
-      }
-    }
-    if (isAuthenticated) {
-      ensureUserProfile();
+  //       if (updateError) {
+  //         console.error('Error updating user profile with displayName', updateError);
+  //       }
+  //     }
+  //   }
+  //   if (isAuthenticated) {
+  //     ensureUserProfile();
       
-    }
+  //   }
     
-  }, [isAuthenticated]);
+  // }, [isAuthenticated]);
   
-  // Sincroniza el estado de autenticación con Supabase
-  useEffect(() => {
-    // Chequea usuario actual al montar
-    clientSupaBase.auth.getUser().then(({ data }) => {
-      if (data?.user) {
-        setIsAuthenticated(true);
-      }
-    });
-    // Suscribe a cambios de sesión
-    const { data: listener } = clientSupaBase.auth.onAuthStateChange((_event, session) => {
-      setIsAuthenticated(!!session?.user);
-    });
-    return () => {
-      listener?.subscription.unsubscribe();
-    };
-  }, []);
+  // // Sincroniza el estado de autenticación con Supabase
+  // useEffect(() => {
+  //   // Chequea usuario actual al montar
+  //   clientSupaBase.auth.getUser().then(({ data }) => {
+  //     if (data?.user) {
+  //       setIsAuthenticated(true);
+  //     }
+  //   });
+  //   // Suscribe a cambios de sesión
+  //   const { data: listener } = clientSupaBase.auth.onAuthStateChange((_event, session) => {
+  //     setIsAuthenticated(!!session?.user);
+  //   });
+  //   return () => {
+  //     listener?.subscription.unsubscribe();
+  //   };
+  // }, []);
 
-  const [trips, setTrips] = useState<Trip[]>([]);
+  // const [trips, setTrips] = useState<Trip[]>([]);
 
   // Cargar todos los viajes desde Supabase al iniciar
-  useEffect(() => {
-    if (!isAuthenticated) {
-      setTrips([]);
-      return;
-    }
+  // useEffect(() => {
+  //   if (!isAuthenticated) {
+  //     setTrips([]);
+  //     return;
+  //   }
 
-    let subscription: any = null;
+  //   let subscription: any = null;
 
-    const setupRealtimeSubscription = async () => {
-      const { data: userData } = await clientSupaBase.auth.getUser();
-      const userId = userData?.user?.id;
+  //   const setupRealtimeSubscription = async () => {
+  //     const { data: userData } = await clientSupaBase.auth.getUser();
+  //     const userId = userData?.user?.id;
       
-      if (!userId) {
-        setTrips([]);
-        return;
-      }
+  //     if (!userId) {
+  //       setTrips([]);
+  //       return;
+  //     }
 
-      // Cargar datos iniciales
-      const { data, error } = await clientSupaBase
-        .from('Trips')
-        .select('*')
-        .eq('owner_id', userId);
+  //     // Cargar datos iniciales
+  //     const { data, error } = await clientSupaBase
+  //       .from('Trips')
+  //       .select('*')
+  //       .eq('owner_id', userId);
       
-      if (!error && data) {
-        setTrips(data);
-      }
+  //     if (!error && data) {
+  //       setTrips(data);
+  //     }
 
-      console.log('User ID:', userId);
-      console.log('Trips:', data);
+  //     console.log('User ID:', userId);
+  //     console.log('Trips:', data);
 
-      // Suscripción a cambios en tiempo real (solo escucha cuando hay cambios reales)
-      subscription = clientSupaBase
-        .channel('trips-changes')
-        .on(
-          'postgres_changes',
-          {
-            event: '*',
-            schema: 'public',
-            table: 'Trips',
-            filter: `owner_id=eq.${userId}`
-          },
-          async () => {
-            console.log('Cambio detectado en Trips, recargando...');
-            const { data: updatedData } = await clientSupaBase
-              .from('Trips')
-              .select('*')
-              .eq('owner_id', userId);
-            if (updatedData) {
-              setTrips(updatedData);
-            }
-          }
-        )
-        .subscribe();
-    };
+  //     // Suscripción a cambios en tiempo real (solo escucha cuando hay cambios reales)
+  //     subscription = clientSupaBase
+  //       .channel('trips-changes')
+  //       .on(
+  //         'postgres_changes',
+  //         {
+  //           event: '*',
+  //           schema: 'public',
+  //           table: 'Trips',
+  //           filter: `owner_id=eq.${userId}`
+  //         },
+  //         async () => {
+  //           console.log('Cambio detectado en Trips, recargando...');
+  //           const { data: updatedData } = await clientSupaBase
+  //             .from('Trips')
+  //             .select('*')
+  //             .eq('owner_id', userId);
+  //           if (updatedData) {
+  //             setTrips(updatedData);
+  //           }
+  //         }
+  //       )
+  //       .subscribe();
+  //   };
 
-    setupRealtimeSubscription();
+  //   setupRealtimeSubscription();
 
-    return () => {
-      if (subscription) {
-        subscription.unsubscribe();
-      }
-    };
-  }, [isAuthenticated]);
+  //   return () => {
+  //     if (subscription) {
+  //       subscription.unsubscribe();
+  //     }
+  //   };
+  // }, [isAuthenticated]);
 
   const [expenses, setExpenses] = useState<Expense[]>([]);
 
@@ -291,67 +295,71 @@ function App() {
   const dailyExpenses = todayExpenses.reduce((sum, exp) => sum + exp.amount, 0);
 
   return (
-    <Routes>
-            <Route
-              path="/costumer"
-              element={<CostumerView />}
-            />
-      <Route
-        path="/login"
-        element={
-          isAuthenticated ? <Navigate to="/trips" replace /> : <Login />
-        }
-      />
-      <Route
-        path="/"
-        element={<Navigate to={isAuthenticated ? '/trips' : '/login'} replace />}
-      />
-      <Route
-        path="/trips"
-        element={
-          isAuthenticated ? (
-            <Layout
-              currentView="trips"
-              onNavigate={view => navigate(view === 'trips' ? '/trips' : '/profile')}
-              onLogout={handleLogout}
-              userName={userName}
-            >
-              <TripsView
-                trips={trips}
-                onAddTrip={handleAddTrip}
-                onUpdateTripStatus={handleUpdateTripStatus}
-                dailyExpenses={dailyExpenses}
+    <UserProvider>
+      <TripProvider>
+        <Routes>
+                <Route
+                  path="/costumer"
+                  element={<CostumerView />}
               />
-            </Layout>
-          ) : (
-            <Navigate to="/login" replace />
-          )
-        }
-      />
-      <Route
-        path="/profile"
-        element={
-          isAuthenticated ? (
-            <Layout
-              currentView="profile"
-              onNavigate={view => navigate(view === 'trips' ? '/trips' : '/profile')}
-              onLogout={handleLogout}
-              userName={userName}
-            >
-              <ProfileView
-                settings={settings}
-                onUpdateSettings={handleUpdateSettings}
-                expenses={expenses}
-                onAddExpense={handleAddExpense}
-                trips={trips}
-              />
-            </Layout>
-          ) : (
-            <Navigate to="/login" replace />
-          )
-        }
-      />
-    </Routes>
+        <Route
+          path="/login"
+          element={
+            isAuthenticated ? <Navigate to="/trips" replace /> : <Login />
+          }
+        />
+        <Route
+          path="/"
+          element={<Navigate to={isAuthenticated ? '/trips' : '/login'} replace />}
+        />
+        <Route
+          path="/trips"
+          element={
+            isAuthenticated ? (
+              <Layout
+                currentView="trips"
+                onNavigate={view => navigate(view === 'trips' ? '/trips' : '/profile')}
+                onLogout={handleLogout}
+                userName={userName}
+              >
+                <TripsView
+                  trips={trips}
+                  onAddTrip={handleAddTrip}
+                  onUpdateTripStatus={handleUpdateTripStatus}
+                  dailyExpenses={dailyExpenses}
+                />
+              </Layout>
+            ) : (
+              <Navigate to="/login" replace />
+            )
+          }
+        />
+        <Route
+          path="/profile"
+          element={
+            isAuthenticated ? (
+              <Layout
+                currentView="profile"
+                onNavigate={view => navigate(view === 'trips' ? '/trips' : '/profile')}
+                onLogout={handleLogout}
+                userName={userName}
+              >
+                <ProfileView
+                  settings={settings}
+                  onUpdateSettings={handleUpdateSettings}
+                  expenses={expenses}
+                  onAddExpense={handleAddExpense}
+                  trips={trips}
+                />
+              </Layout>
+            ) : (
+              <Navigate to="/login" replace />
+            )
+          }
+        />
+      </Routes>
+     </TripProvider>
+    </UserProvider>
   );
 }
 
