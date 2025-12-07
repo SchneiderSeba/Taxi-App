@@ -58,9 +58,9 @@ export default function Login() {
         provider: 'google',
         options: {
           //Para Produccion
-          redirectTo: 'https://taxi-app-production.up.railway.app/login'
+          // redirectTo: 'https://taxi-app-production.up.railway.app/login'
           //Para Desarrollo
-          // redirectTo: 'http://localhost:5173/login'
+          redirectTo: 'http://localhost:5174/login'
         }
       });
     } catch (error) {

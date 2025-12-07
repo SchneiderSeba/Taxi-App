@@ -5,6 +5,7 @@ import EarningsReport from './EarningsReport';
 import ProfileCard from './ProfileCard';
 import { clientSupaBase } from '../supabase/client';
 import { Expense, Profile, Trip, UserSettings, ProfileEditableField } from '../types';
+import ProfileDashboard from './ProfileDashboard';
 
 type ActiveTab = 'settings' | 'earnings' | 'profile';
 type EditableProfileField = ProfileEditableField;
@@ -337,13 +338,18 @@ export default function ProfileView({ settings, onUpdateSettings, expenses, onAd
           {activeTab === 'earnings' && <EarningsReport trips={trips} expenses={expenses} settings={settings} />}
 
           {activeTab === 'profile' && (
-            <div>
-              {userProfile ? (
-                <ProfileCard profile={userProfile} onEditField={openEditModal} />
-              ) : (
-                <p className="text-gray-500 text-sm">No encontramos información de perfil todavía.</p>
-              )}
-            </div>
+            <>
+              <div>
+                {userProfile ? (
+                  <ProfileCard profile={userProfile} onEditField={openEditModal} />
+                ) : (
+                  <p className="text-gray-500 text-sm">No encontramos información de perfil todavía.</p>
+                )}
+              </div>
+              <div>
+                <ProfileDashboard trips={trips} />
+              </div>
+            </>
           )}
         </div>
       </div>
