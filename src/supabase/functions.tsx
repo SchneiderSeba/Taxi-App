@@ -10,20 +10,10 @@ export const MercadoPagoBtn = () => {
     const handlePayment = async () => {
         try {
             const { data, error } = await clientSupaBase.functions.invoke("create-preference-mp", {
-                // body: {
-                //     title: "Viaje en Taxi",
-                //     price: 1500,
-                //     quantity: 1
-                // }
                 body: {
-                    items: [
-                        {
-                            id: "viaje-en-taxi",
-                            title: "Viaje en Taxi",
-                            unit_price: 1500,
-                            quantity: 1
-                        },
-                    ],
+                    title: "Viaje en Taxi",
+                    price: 1500,
+                    quantity: 1
                 }
             });
 
