@@ -1,8 +1,9 @@
 import { initMercadoPago } from '@mercadopago/sdk-react'
 import { clientSupaBase } from './client';
 import { CreditCard } from 'lucide-react';
+import { mercadoPagoKey } from './client';
 
-initMercadoPago('APP_USR-f04eb54c-47b0-47e1-a969-36742ae9f0af');
+initMercadoPago(mercadoPagoKey);
 
 
 export const MercadoPagoBtn = () => {
