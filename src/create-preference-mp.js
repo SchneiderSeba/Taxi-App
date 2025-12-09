@@ -45,21 +45,23 @@ Deno.serve(async (req) => {
         }],
 
         payer: {
-          email: "test_user_3050160392@testuser.com", // Email construido desde User ID del comprador de prueba
-          name: "Tester",
-          surname: "Tester"
+          email: "test_user_3044196200@testuser.com",
+          name: "Buyer",
+          surname: "Test"
         },
+        
+        purpose: "wallet_purchase", // Evita verificación en pruebas
         
         binary_mode: true,
         installments: 1,
 
         back_urls: {
-        success: "https://4gb02f93-5174.brs.devtunnels.ms/payment",
-        failure: "https://4gb02f93-5174.brs.devtunnels.ms/payment",
-        pending: "https://4gb02f93-5174.brs.devtunnels.ms/payment",
-        // success: "https://taxi-app-production.up.railway.app/payment/success",
-        // failure: "https://taxi-app-production.up.railway.app/payment/failure",
-        // pending: "https://taxi-app-production.up.railway.app/payment/pending",
+        // success: "https://4gb02f93-5174.brs.devtunnels.ms/payment",
+        // failure: "https://4gb02f93-5174.brs.devtunnels.ms/payment",
+        // pending: "https://4gb02f93-5174.brs.devtunnels.ms/payment",
+        success: "https://taxi-app-production.up.railway.app/payment",
+        failure: "https://taxi-app-production.up.railway.app/payment",
+        pending: "https://taxi-app-production.up.railway.app/payment",
       },
 
         notification_url: `https://lzxlnqeokbzytnjgglte.supabase.co/functions/v1/mp-webhook?owner_id=${owner_id}&client_id=${client_id}`,
