@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { History, DollarSign, Calendar, MapPin, User, Clock } from 'lucide-react';
+import { History, DollarSign, Calendar, MapPin, User } from 'lucide-react';
 import { Trip } from '../types';
 
 interface Payment {

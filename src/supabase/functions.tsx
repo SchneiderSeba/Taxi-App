@@ -6,15 +6,23 @@ import { mercadoPagoKey } from './client';
 initMercadoPago(mercadoPagoKey);
 
 
-export const MercadoPagoBtn = () => {
+interface MercadoPagoBtnProps {
+  ownerId: string;  // ID del driver
+  clientId: string; // customerId del pasajero
+  price: number;
+}
+
+export const MercadoPagoBtn = ({ ownerId, clientId, price }: MercadoPagoBtnProps) => {
 
     const handlePayment = async () => {
         try {
             const { data, error } = await clientSupaBase.functions.invoke("create-preference-mp", {
                 body: {
                     title: "Viaje en Taxi",
-                    price: 1500,
-                    quantity: 1
+                    price: price,
+                    quantity: 1,
+                    owner_id: ownerId,
+                    client_id: clientId
                 }
             });
 

@@ -1,6 +1,7 @@
-COORE
+ COORE
 
 * Agregar uso de Contexto ( User , Trips )✅
+* Dividir Login en Drivers y Costumers
 
 VISTA CLIENTE
 

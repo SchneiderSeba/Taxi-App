@@ -32,6 +32,7 @@ export interface RequestStatusCard {
   createdAt: string;
   status: Trip['done'];
   customerId: string;
+  ownerId: string; // ID del driver
   price?: number;
   driverAvailable?: boolean;
 }
@@ -90,7 +91,7 @@ const CostumerView = () => {
         .eq('customer_id', customerId)
         .order('created_at', { ascending: false })
         .limit(1)
-        .single();
+        .maybeSingle();
 
       if (error) {
         console.log('No se encontró solicitud previa:', error.message);
@@ -104,7 +105,7 @@ const CostumerView = () => {
           .from('UsersProfile')
           .select('username, displayName, available')
           .eq('owner_id', tripData.owner_id)
-          .single();
+          .maybeSingle();
 
         setLastRequest({
           driverName: driverData?.displayName || driverData?.username || 'Conductor',
@@ -114,6 +115,7 @@ const CostumerView = () => {
           createdAt: tripData.created_at,
           status: tripData.done as Trip['done'],
           customerId: customerId,
+          ownerId: tripData.owner_id,
           price: tripData.price,
           driverAvailable: driverData?.available ?? false
         });
@@ -181,7 +183,7 @@ const CostumerView = () => {
         .eq('customer_id', customerId)
         .order('created_at', { ascending: false })
         .limit(1)
-        .single();
+        .maybeSingle();
 
       if (!error && data && (data.done !== currentStatus || data.price !== lastRequest.price)) {
         // Get driver name
@@ -189,7 +191,7 @@ const CostumerView = () => {
           .from('UsersProfile')
           .select('username, displayName, available')
           .eq('owner_id', data.owner_id)
-          .single();
+          .maybeSingle();
 
         setLastRequest(prev => prev ? {
           ...prev,
@@ -278,7 +280,8 @@ const CostumerView = () => {
       preferredTime: preferredTime || 'N/D',
       createdAt: data?.created_at ?? new Date().toISOString(),
       status: 'pending',
-      customerId: customerId || ''
+      customerId: customerId || '',
+      ownerId: selectedDriver.owner_id
     });
     setSubmitting(false);
     setSelectedDriver(null);

@@ -10,6 +10,7 @@ import { Trip, Expense, UserSettings } from './types';
 import { clientSupaBase } from './supabase/client';
 import { TripProvider, useTripContext } from './Context/TripContext';
 import { UserProvider, useUserContext } from './Context/UserContext';
+import { Payment } from './components/Payment';
 
 function App() {
   // const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -210,6 +211,9 @@ function App() {
             )
           }
         />
+
+          <Route path="/payment" element={<Payment />} />
+
       </Routes>
      </TripProvider>
     </UserProvider>

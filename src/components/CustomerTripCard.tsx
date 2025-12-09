@@ -44,7 +44,11 @@ export default function CustomerTripCard({ lastRequest }: CustomerTripCardProps)
                         {lastRequest.price?.toFixed(2)}
                         </span>
                         <>
-                            <MercadoPagoBtn />
+                            <MercadoPagoBtn 
+                              ownerId={lastRequest.ownerId}
+                              clientId={lastRequest.customerId}
+                              price={lastRequest.price || 0}
+                            />
                         </>
                     </>
                     )}
