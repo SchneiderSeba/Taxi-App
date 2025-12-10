@@ -45,7 +45,7 @@ Deno.serve(async (req) => {
         }],
 
         payer: {
-          email: "test_user_3044196200@testuser.com",
+          email: "seba_19_sc@hotmail.com",
           name: "Buyer",
           surname: "Test"
         },
