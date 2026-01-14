@@ -86,7 +86,7 @@ export const NewTripForm: React.FC<NewTripFormProps> = ({
     let destinationInputAutoComplete: google.maps.places.Autocomplete | null = null;
 
     const autoComplete = async () => {
-      const { Autocomplete } = await import('@googlemaps/js-api-loader').then(m => m.importLibrary("places"));
+      const { Autocomplete } = await importLibrary("places");
       if (pickupRef.current) {
         pickupInputAutoComplete = new Autocomplete(pickupRef.current, {
           fields: ["formatted_address"],
