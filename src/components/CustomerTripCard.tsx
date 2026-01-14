@@ -1,8 +1,7 @@
-
 import { CheckCircle, Clock, DollarSign } from 'lucide-react';
 import { RequestStatusCard } from './CostumerView';
 import { MercadoPagoBtn } from '../supabase/functions';
-
+import GoogleMainMap from './Maps/GoogleMainMap';
 interface CustomerTripCardProps {
   lastRequest: RequestStatusCard;
 }
@@ -81,6 +80,10 @@ export default function CustomerTripCard({ lastRequest }: CustomerTripCardProps)
                     {lastRequest.status === 'completed' && ' ¡Tu viaje ha sido aceptado! El conductor se pondrá en contacto contigo.'}
                     {lastRequest.status === 'cancelled' && ' Lo sentimos, tu solicitud fue rechazada. Puedes intentar con otro conductor.'}
                 </p>
+                <GoogleMainMap
+                  startAddress={lastRequest.pickup || ""}
+                  destinationAddress={lastRequest.destination || ""}
+                />
                 </div>
             </section>
             )}

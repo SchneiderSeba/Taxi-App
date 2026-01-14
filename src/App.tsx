@@ -153,7 +153,7 @@ function App() {
       <TripProvider>
         <Routes>
                 <Route
-                  path="/costumer"
+                  path="/customer"
                   element={<CostumerView />}
               />
         <Route
