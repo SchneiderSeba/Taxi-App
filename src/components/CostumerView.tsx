@@ -14,8 +14,10 @@ import {
 import { clientSupaBase } from '../supabase/client';
 import type { Profile, Trip } from '../types';
 import CustomerTripCard from './CustomerTripCard';
-import { setOptions } from '@googlemaps/js-api-loader';
-import { NewTripForm } from './NewTripForm';
+// import { setOptions } from '@googlemaps/js-api-loader';
+// import { NewTripForm } from './NewTripForm';
+import { NewTripFormV2 } from './NewTripFormV2';
+import { loadGoogleMaps } from '../lib/GoogleMapsServices';
 export interface TripRequestForm {
   passengerName: string;
   pickup?: string;
@@ -60,10 +62,19 @@ const CostumerView = () => {
   const [lastRequest, setLastRequest] = useState<RequestStatusCard | null>(null);
   const [darkMode, setDarkMode] = useState(false);
   
+  // useEffect(() => {
+  //   setOptions({
+  //     key: import.meta.env.VITE_PUBLIC_GOOGLEMAP_KEY,
+  //   });
+  // }, []);
+
   useEffect(() => {
-    setOptions({
-      key: import.meta.env.VITE_PUBLIC_GOOGLEMAP_KEY,
-    });
+    const load = async () => {
+      console.log('[CostumerView] calling loadGoogleMaps()');
+      await loadGoogleMaps();
+      console.log('[CostumerView] loadGoogleMaps() resolved');
+    };
+    load();
   }, []);
 
 // Generar un id unico para el Customer 
@@ -469,7 +480,20 @@ const CostumerView = () => {
               </button>
             </div>
 
-            <NewTripForm
+            {/* <NewTripForm
+              handleSubmitRequest={handleSubmitRequest}
+              handleChange={handleChange}
+              passengerName={form.passengerName}
+              pickup={form.pickup || ''}
+              destination={form.destination || ''}
+              phone={form.phone || ''}
+              preferredTime={form.preferredTime || ''}
+              formError={formError}
+              setSelectedDriver={setSelectedDriver}
+              submitting={submitting}
+            /> */}
+
+            <NewTripFormV2
               handleSubmitRequest={handleSubmitRequest}
               handleChange={handleChange}
               passengerName={form.passengerName}

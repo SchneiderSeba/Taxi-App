@@ -4,6 +4,7 @@ import { Profile } from '../types';
 /// <reference types="@types/google.maps" />
 import { useEffect, useRef } from 'react';
 import  { importLibrary } from '@googlemaps/js-api-loader';
+import { loadGoogleMaps } from '../lib/GoogleMapsServices';
 
 interface NewTripFormProps {
   handleSubmitRequest: (e: React.FormEvent) => void;
@@ -29,7 +30,11 @@ export default function GooglePlaces() {
   
   const autoComplete = async () => {
 
-    const { Autocomplete } = await importLibrary("places");
+    await loadGoogleMaps();
+
+    // const { Autocomplete } = await importLibrary("places");
+
+    const { Autocomplete } = await window.google.maps.importLibrary("places") as google.maps.PlacesLibrary;
 
     const pickupInputAutoComplete = new Autocomplete(pickupInputRef.current!, {
       fields: ["formatted_address"],

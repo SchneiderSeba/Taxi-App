@@ -1,6 +1,7 @@
 /// <reference types="@types/google.maps" />
 import { useEffect, useRef, useState } from 'react';
-import  { importLibrary } from '@googlemaps/js-api-loader';
+// import  { importLibrary } from '@googlemaps/js-api-loader';
+import { loadGoogleMaps } from '../../lib/GoogleMapsServices';
 
 export default function GoogleMainMap( { startAddress, destinationAddress }: { startAddress: string; destinationAddress: string } ) {  
 
@@ -14,9 +15,15 @@ export default function GoogleMainMap( { startAddress, destinationAddress }: { s
   
   const initMap = async () => {
 
-    const { Map } = await importLibrary("maps");
+    await loadGoogleMaps();
+
+    // const { Map } = await importLibrary("maps");
     
-    const { DirectionsService, DirectionsRenderer } = await importLibrary("routes");
+    const { Map } = await window.google.maps.importLibrary("maps") as google.maps.MapsLibrary;
+
+    // const { DirectionsService, DirectionsRenderer } = await importLibrary("routes");
+
+    const { DirectionsService, DirectionsRenderer } = await window.google.maps.importLibrary("routes") as google.maps.RoutesLibrary;
 
     const location = { lat: -34.6037, lng: -58.3816 };
 

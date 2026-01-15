@@ -42,4 +42,11 @@ export interface Profile {
   available?: boolean;
 }
 
+// export {};
+// declare module 'react' {
+//   interface IntrinsicElements {
+//     'gmpx-place-autocomplete': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement>;
+//   }
+// }
+
 export type ProfileEditableField = 'carModel' | 'carPlate' | 'pictureUrl' | 'available';
