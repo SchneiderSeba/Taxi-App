@@ -18,6 +18,7 @@ import CustomerTripCard from './CustomerTripCard';
 // import { NewTripForm } from './NewTripForm';
 import { NewTripFormV2 } from './NewTripFormV2';
 import { loadGoogleMaps } from '../lib/GoogleMapsServices';
+import BackGround from './UI/BackGround';
 export interface TripRequestForm {
   passengerName: string;
   pickup?: string;
@@ -308,13 +309,25 @@ const CostumerView = () => {
 
   return (
     <>
+    
     <div className={darkMode ? 'dark' : ''}>
-      <div className="min-h-screen bg-gradient-to-b from-emerald-50 to-white dark:from-gray-900 dark:to-gray-950">
+      <div className="fixed top-0 left-0 w-full h-full z-0 dark:bg-gray-900">
+            <BackGround
+              colorStops={["#059669", "#14b8a6", "#047857"]}
+              blend={0.8}
+              amplitude={0.8}
+              speed={0.8}
+            />
+          </div>
+      
+      <div className="relative min-h-screen bg-transparent">
+        
         <div className="flex justify-end px-3 sm:px-6 pt-4 sm:pt-6">
+          
           <button
             type="button"
             onClick={() => setDarkMode(prev => !prev)}
-            className="inline-flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 rounded-full border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-100 text-xs sm:text-sm font-semibold shadow-sm hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors min-h-[40px]"
+            className="inline-flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 rounded-full border border-gray-200 dark:border-gray-700 bg-white/25 dark:bg-gray-800 text-gray-700 dark:text-gray-100 text-xs sm:text-sm font-semibold shadow-sm hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors min-h-[40px]"
           >
             {darkMode ? <Sun className="w-4 h-4 shrink-0" /> : <Moon className="w-4 h-4 shrink-0" />}
             <span className="hidden xs:inline">{darkMode ? 'Modo claro' : 'Modo oscuro'}</span>
@@ -346,7 +359,7 @@ const CostumerView = () => {
         )}
 
         <section className="px-4 sm:px-6 pb-12 sm:pb-20 max-w-6xl mx-auto">
-          <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl sm:rounded-2xl shadow-xl p-4 sm:p-6 mb-6 sm:mb-8">
+          <div className="bg-white/25 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl sm:rounded-2xl shadow-xl p-4 sm:p-6 mb-6 sm:mb-8">
             <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 items-start sm:items-center">
               <div className="flex items-center gap-2 sm:gap-3 w-full sm:w-auto">
                 <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-emerald-100 flex items-center justify-center shrink-0">
@@ -401,7 +414,7 @@ const CostumerView = () => {
               {filteredDrivers.map(driver => (
                 <article
                   key={driver.id}
-                  className={`bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl sm:rounded-2xl p-4 sm:p-6 shadow-lg flex flex-col ${
+                  className={`bg-white/25 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl sm:rounded-2xl p-4 sm:p-6 shadow-lg flex flex-col ${
                     !driver.available ? 'opacity-40' : ''
                   }`}
                 >
@@ -465,7 +478,7 @@ const CostumerView = () => {
             }
           }}
         >
-          <div className="bg-white dark:bg-gray-900 rounded-xl sm:rounded-2xl shadow-2xl max-w-lg w-full my-4 sm:my-8">
+          <div className="bg-white/25 dark:bg-gray-900 rounded-xl sm:rounded-2xl shadow-2xl max-w-lg w-full my-4 sm:my-8">
             <div className="flex items-center justify-between p-4 sm:p-6 border-b border-gray-200 dark:border-gray-800">
               <div>
                 <p className="text-xs sm:text-sm text-gray-500">Solicitar viaje con</p>

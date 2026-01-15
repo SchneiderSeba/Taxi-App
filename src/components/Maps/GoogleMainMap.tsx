@@ -60,12 +60,12 @@ export default function GoogleMainMap( { startAddress, destinationAddress }: { s
     <>
       <div style={{ textAlign: "center", marginBottom: "10px" }}>
         {leg && (
-          <div style={{ display: "flex", justifyContent: "center", padding: "10px", border: "1px solid #ccc", borderRadius: "5px", backgroundColor: "#f9f9f9" }}>
+          <div style={{ display: "flex", justifyContent: "center", padding: "10px", border: "1px solid #ccc", borderRadius: "5px", }} className='bg-white/25'>
             <p>
-              <strong>Distance:</strong> {leg.distance?.text}
+              <strong>Distance: </strong> {leg.distance?.text} .
             </p>
             <p>
-              <strong>Duration:</strong> {leg.duration?.text}
+              <strong>Duration:</strong> {leg.duration?.text} 
             </p>
           </div>
         )}
