@@ -20,8 +20,9 @@ const [isAuthenticated, setIsAuthenticated] = useState(false);
     async function ensureUserProfile() {
       const { data: userData } = await clientSupaBase.auth.getUser();
       const user = userData?.user;
-      const userDisplayName = user.user_metadata.full_name || user.user_metadata.name || user.email.split("@")[0];
       if (!user) return;
+      const fallbackName = user.email?.split('@')[0] || 'Usuario';
+      const userDisplayName = user.user_metadata.full_name || user.user_metadata.name || fallbackName;
 
       const { data: profile, error } = await clientSupaBase
         .from('UsersProfile')

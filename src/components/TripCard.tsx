@@ -1,5 +1,5 @@
 import { type FC, type ElementType, useState } from 'react';
-import { MapPin, DollarSign, CheckCircle, Clock, XCircle, Edit2, ArrowRightToLine } from 'lucide-react';
+import { MapPin, DollarSign, CheckCircle, Clock, XCircle, ArrowRightToLine } from 'lucide-react';
 import { Trip } from '../types';
 import { clientSupaBase } from '../supabase/client';
 

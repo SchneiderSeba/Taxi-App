@@ -24,7 +24,7 @@ interface ProfileFunctions {
 //   };
 }
 
-type SectionKey = 'tripHistory' | 'paymentHistory';
+type SectionKey = keyof ProfileFunctions;
 
 interface ProfileDashboardProps {
   trips: Trip[];

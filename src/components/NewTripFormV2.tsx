@@ -20,6 +20,30 @@ interface NewTripFormProps {
   destinationInputRef?: React.RefObject<HTMLInputElement>;
 }
 
+interface PlacePredictionLike {
+  text?: { text?: string };
+  mainText?: { text?: string };
+  secondaryText?: { text?: string };
+  toPlace?: () => {
+    fetchFields: (options: { fields: string[] }) => Promise<unknown>;
+  };
+}
+
+interface AutocompleteSuggestionLike {
+  placePrediction?: PlacePredictionLike;
+}
+
+interface AutocompleteSuggestionApi {
+  fetchAutocompleteSuggestions: (request: {
+    input: string;
+    sessionToken: unknown;
+  }) => Promise<{ suggestions?: AutocompleteSuggestionLike[] }>;
+}
+
+interface AutocompleteSessionTokenConstructor {
+  new (): unknown;
+}
+
 export const NewTripFormV2: React.FC<NewTripFormProps> = ({
   handleSubmitRequest,
   handleChange,
@@ -35,15 +59,13 @@ export const NewTripFormV2: React.FC<NewTripFormProps> = ({
   const pickupInputRef = useRef<HTMLInputElement>(null);
   const destinationInputRef = useRef<HTMLInputElement>(null);
   const [placesReady, setPlacesReady] = useState(false);
-  const [pickupPredictions, setPickupPredictions] = useState<any[]>([]);
-  const [destinationPredictions, setDestinationPredictions] = useState<any[]>([]);
+  const [pickupPredictions, setPickupPredictions] = useState<AutocompleteSuggestionLike[]>([]);
+  const [destinationPredictions, setDestinationPredictions] = useState<AutocompleteSuggestionLike[]>([]);
   const [showPickupDropdown, setShowPickupDropdown] = useState(false);
   const [showDestinationDropdown, setShowDestinationDropdown] = useState(false);
 
-  const AutocompleteSuggestionRef = useRef<any>(null);
-  const AutocompleteSessionTokenRef = useRef<any>(null);
-  const PlaceRef = useRef<any>(null);
-  const sessionTokenRef = useRef<any>(null);
+  const AutocompleteSuggestionRef = useRef<AutocompleteSuggestionApi | null>(null);
+  const sessionTokenRef = useRef<unknown>(null);
 
   useEffect(() => {
     let mounted = true;
@@ -60,11 +82,13 @@ export const NewTripFormV2: React.FC<NewTripFormProps> = ({
       }
 
       try {
-        const { AutocompleteSuggestion, AutocompleteSessionToken, Place } = await window.google.maps.importLibrary('places') as any;
+        const placesLibrary = await window.google.maps.importLibrary('places') as unknown as {
+          AutocompleteSuggestion: AutocompleteSuggestionApi;
+          AutocompleteSessionToken: AutocompleteSessionTokenConstructor;
+        };
+        const { AutocompleteSuggestion, AutocompleteSessionToken } = placesLibrary;
 
         AutocompleteSuggestionRef.current = AutocompleteSuggestion;
-        AutocompleteSessionTokenRef.current = AutocompleteSessionToken;
-        PlaceRef.current = Place;
         sessionTokenRef.current = new AutocompleteSessionToken();
 
         if (mounted) {
@@ -130,7 +154,7 @@ export const NewTripFormV2: React.FC<NewTripFormProps> = ({
     }
   };
 
-  const handlePickupSelect = async (suggestion: any) => {
+  const handlePickupSelect = async (suggestion: AutocompleteSuggestionLike) => {
     
     const text = suggestion.placePrediction?.text?.text || '';
     handleChange('pickup', text);
@@ -145,7 +169,7 @@ export const NewTripFormV2: React.FC<NewTripFormProps> = ({
     }
   };
 
-  const handleDestinationSelect = async (suggestion: any) => {
+  const handleDestinationSelect = async (suggestion: AutocompleteSuggestionLike) => {
     
     const text = suggestion.placePrediction?.text?.text || '';
     handleChange('destination', text);

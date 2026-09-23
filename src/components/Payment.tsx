@@ -17,12 +17,10 @@ export const Payment = () => {
   useEffect(() => {
     if (paymentId) {
       clientSupaBase
-        .from("payments")
-        .select("*")
-        .eq("mp_payment_id", paymentId)
+        .rpc("get_payment_result", { p_payment_id: paymentId })
         .maybeSingle()
         .then(({ data }) => {
-          setDbPayment(data);
+          setDbPayment(data as PaymentRecord | null);
         });
     }
   }, [paymentId]);

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   Car,
   Phone,
@@ -19,6 +19,7 @@ import CustomerTripCard from './CustomerTripCard';
 import { NewTripFormV2 } from './NewTripFormV2';
 import { loadGoogleMaps } from '../lib/GoogleMapsServices';
 import BackGround from './UI/BackGround';
+import { serviceErrorMessage } from '../lib/serviceError';
 export interface TripRequestForm {
   passengerName: string;
   pickup?: string;
@@ -29,6 +30,7 @@ export interface TripRequestForm {
 }
 
 export interface RequestStatusCard {
+  tripId: number;
   driverName: string;
   pickup?: string;
   destination?: string;
@@ -39,6 +41,24 @@ export interface RequestStatusCard {
   ownerId: string; // ID del driver
   price?: number;
   driverAvailable?: boolean;
+}
+
+interface CustomerTripRow {
+  trip_id: number;
+  done: Trip['done'];
+  created_at: string;
+  owner_id: string;
+  pickup?: string;
+  destination?: string;
+  preferred_time?: string;
+  price?: number;
+  driver_name?: string;
+  driver_available?: boolean;
+}
+
+interface RequestedTripRow {
+  trip_id: number;
+  created_at: string;
 }
 
 const initialFormState: TripRequestForm = {
@@ -84,7 +104,7 @@ const CostumerView = () => {
   useEffect(() => {
     const storedCustomerId = localStorage.getItem('customerId');
     if (!storedCustomerId) {
-      const newCustomerId = String(Math.floor(10000000 + Math.random() * 90000000));
+      const newCustomerId = crypto.randomUUID();
       localStorage.setItem('customerId', newCustomerId);
       setCustomerId(newCustomerId);
       console.log('Nuevo customerId generado:', newCustomerId);
@@ -94,55 +114,41 @@ const CostumerView = () => {
     }
   }, []);
 
-  // Load last request when customerId is available
-  useEffect(() => {
-    if (!customerId) {
-      console.log('customerId no disponible aún, esperando...');
-      return;
+  const loadLastRequest = useCallback(async (id: string) => {
+    const { data: rawTripData, error } = await clientSupaBase
+      .rpc('get_customer_last_trip', { p_customer_id: id })
+      .maybeSingle();
+
+    if (error) {
+      console.error('Error loading customer request', error);
+      return null;
     }
 
-    console.log('Cargando última solicitud para customerId:', customerId);
+    const tripData = rawTripData as CustomerTripRow | null;
+    if (!tripData) return null;
 
-    const loadLastRequest = async () => {
-      const { data: tripData, error } = await clientSupaBase
-        .from('Trips')
-        .select('done, created_at, owner_id, name, pickup, destination, preferred_time, price')
-        .eq('customer_id', customerId)
-        .order('created_at', { ascending: false })
-        .limit(1)
-        .maybeSingle();
-
-      if (error) {
-        console.log('No se encontró solicitud previa:', error.message);
-        return;
-      }
-
-      if (tripData) {
-        console.log('Solicitud encontrada:', tripData);
-        // Get driver name
-        const { data: driverData } = await clientSupaBase
-          .from('UsersProfile')
-          .select('username, displayName, available')
-          .eq('owner_id', tripData.owner_id)
-          .maybeSingle();
-
-        setLastRequest({
-          driverName: driverData?.displayName || driverData?.username || 'Conductor',
-          pickup: tripData.pickup,
-          destination: tripData.destination,
-          preferredTime: tripData.preferred_time || 'N/D',
-          createdAt: tripData.created_at,
-          status: tripData.done as Trip['done'],
-          customerId: customerId,
-          ownerId: tripData.owner_id,
-          price: tripData.price,
-          driverAvailable: driverData?.available ?? false
-        });
-      }
+    const request: RequestStatusCard = {
+      tripId: tripData.trip_id,
+      driverName: tripData.driver_name || 'Conductor',
+      pickup: tripData.pickup,
+      destination: tripData.destination,
+      preferredTime: tripData.preferred_time || 'N/D',
+      createdAt: tripData.created_at,
+      status: tripData.done as Trip['done'],
+      customerId: id,
+      ownerId: tripData.owner_id,
+      price: tripData.price,
+      driverAvailable: tripData.driver_available ?? false
     };
 
-    loadLastRequest();
-  }, [customerId]);
+    setLastRequest(request);
+    return request;
+  }, []);
+
+  // Load last request when customerId is available
+  useEffect(() => {
+    if (customerId) loadLastRequest(customerId);
+  }, [customerId, loadLastRequest]);
 
 
   useEffect(() => {
@@ -150,16 +156,16 @@ const CostumerView = () => {
       setLoading(true);
       setListError(null);
 
-      const { data, error: supaError } = await clientSupaBase
-        .from('UsersProfile')
-        .select('id, owner_id, username, email, phone, carModel, carPlate, pictureUrl, created_at, displayName, available')
-        .order('created_at', { ascending: false });
+      const { data, error: supaError } = await clientSupaBase.rpc('list_available_drivers');
 
       if (supaError) {
         console.error('Error loading drivers', supaError);
-        setListError('No pudimos cargar la lista de conductores. Intenta nuevamente en unos segundos.');
+        setListError(serviceErrorMessage(
+          supaError,
+          'No pudimos cargar la lista de conductores. Intenta nuevamente en unos segundos.'
+        ));
       } else if (data) {
-        setDrivers(data);
+        setDrivers(data as Profile[]);
       }
 
       setLoading(false);
@@ -167,59 +173,19 @@ const CostumerView = () => {
 
     fetchDrivers();
 
-    // Suscripción en tiempo real a cambios en UsersProfile
-    const subscription = clientSupaBase
-      .channel('drivers-changes')
-      .on(
-        'postgres_changes',
-        {
-          event: '*',
-          schema: 'public',
-          table: 'UsersProfile'
-        },
-        () => {
-          console.log('Cambio detectado en UsersProfile, recargando conductores...');
-          fetchDrivers();
-        }
-      )
-      .subscribe();
+    const interval = window.setInterval(fetchDrivers, 30_000);
 
     return () => {
-      subscription.unsubscribe();
+      window.clearInterval(interval);
     };
   }, []);
 
   // Poll for trip status updates when there's an active request
   useEffect(() => {
-    if (!customerId || !lastRequest) return;
-
-    const currentStatus = lastRequest.status;
+    if (!customerId) return;
 
     const pollTripStatus = async () => {
-      const { data, error } = await clientSupaBase
-        .from('Trips')
-        .select('done, created_at, owner_id, price')
-        .eq('customer_id', customerId)
-        .order('created_at', { ascending: false })
-        .limit(1)
-        .maybeSingle();
-
-      if (!error && data && (data.done !== currentStatus || data.price !== lastRequest.price)) {
-        // Get driver name
-        const { data: driverData } = await clientSupaBase
-          .from('UsersProfile')
-          .select('username, displayName, available')
-          .eq('owner_id', data.owner_id)
-          .maybeSingle();
-
-        setLastRequest(prev => prev ? {
-          ...prev,
-          status: data.done as Trip['done'],
-          createdAt: data.created_at,
-          driverName: driverData?.username ?? prev.driverName,
-          price: data.price
-        } : null);
-      }
+      await loadLastRequest(customerId);
     };
 
     // Check immediately
@@ -229,7 +195,7 @@ const CostumerView = () => {
     const interval = setInterval(pollTripStatus, 10000);
 
     return () => clearInterval(interval);
-  }, [customerId, lastRequest]);
+  }, [customerId, loadLastRequest]);
 
   const filteredDrivers = useMemo(() => {
     if (!search.trim()) return drivers;
@@ -256,6 +222,10 @@ const CostumerView = () => {
   const handleSubmitRequest = async (event: React.FormEvent) => {
     event.preventDefault();
     if (!selectedDriver) return;
+    if (!customerId) {
+      setFormError('No pudimos inicializar tu solicitud. Recarga la página e intenta nuevamente.');
+      return;
+    }
 
     const { passengerName, pickup, destination, phone, preferredTime } = form;
 
@@ -267,32 +237,30 @@ const CostumerView = () => {
     setSubmitting(true);
     setFormError(null);
 
-    const payload = {
-      name: passengerName,
-      pickup,
-      destination,
-      passenger_phone: phone || null,
-      preferred_time: preferredTime || null,
-      owner_id: selectedDriver.owner_id,
-      done: 'pending' as Trip['done'],
-      customer_id: customerId || '' // Use the customerId from localStorage
-    };
-
-    const { error: supaError, data } = await clientSupaBase
-      .from('Trips')
-      .insert(payload)
-      .select()
+    const { error: supaError, data: rawData } = await clientSupaBase
+      .rpc('request_trip', {
+        p_customer_id: customerId,
+        p_owner_id: selectedDriver.owner_id,
+        p_name: passengerName.trim(),
+        p_pickup: pickup.trim(),
+        p_destination: destination.trim(),
+        p_passenger_phone: phone?.trim() || null,
+        p_preferred_time: preferredTime?.trim() || null
+      })
       .single();
 
     if (supaError) {
       console.error('Error creating trip', supaError);
-      setFormError('No pudimos enviar la solicitud. Intenta nuevamente.');
+      setFormError(serviceErrorMessage(supaError));
       setSubmitting(false);
       return;
     }
 
+    const data = rawData as RequestedTripRow;
+
     setConfirmation('Tu solicitud fue enviada. Espera la confirmación del conductor.');
     setLastRequest({
+      tripId: data.trip_id,
       driverName: selectedDriver.username ?? 'Conductor',
       pickup,
       destination,

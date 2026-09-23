@@ -8,8 +8,8 @@ import CostumerView from './components/CostumerView';
 import { Trip, Expense, UserSettings } from './types';
 
 import { clientSupaBase } from './supabase/client';
-import { TripProvider, useTripContext } from './Context/TripContext';
-import { UserProvider, useUserContext } from './Context/UserContext';
+import { useTripContext } from './Context/TripContext';
+import { useUserContext } from './Context/UserContext';
 import { Payment } from './components/Payment';
 
 function App() {
@@ -73,7 +73,7 @@ function App() {
     
     // Insertar en Supabase con owner_id
     // Si el trip tiene 'address', lo usamos como 'destination'
-    const payload: any = {
+    const payload: Pick<Trip, 'name' | 'done' | 'owner_id'> & Partial<Pick<Trip, 'price' | 'pickup' | 'destination'>> = {
       name: trip.name,
       price: trip.price,
       done: trip.done ?? 'pending',
@@ -149,8 +149,6 @@ function App() {
   const dailyExpenses = todayExpenses.reduce((sum, exp) => sum + exp.amount, 0);
 
   return (
-    <UserProvider>
-      <TripProvider>
         <Routes>
                 <Route
                   path="/customer"
@@ -215,8 +213,6 @@ function App() {
           <Route path="/payment" element={<Payment />} />
 
       </Routes>
-     </TripProvider>
-    </UserProvider>
   );
 }
 

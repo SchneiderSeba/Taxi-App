@@ -25,7 +25,7 @@ export const TripProvider = ({ children }: { children: React.ReactNode }) => {
       return;
     }
 
-    let subscription: any = null;
+    let subscription: ReturnType<typeof clientSupaBase.channel> | null = null;
 
     const setupRealtimeSubscription = async () => {
       const { data: userData } = await clientSupaBase.auth.getUser();

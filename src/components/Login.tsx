@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import { clientSupaBase } from '../supabase/client';
 import { useNavigate } from 'react-router-dom';
 import BackGround from './UI/BackGround';
+import { serviceErrorMessage } from '../lib/serviceError';
 
 
 export default function Login() {
@@ -54,8 +55,9 @@ export default function Login() {
   };
 
   const handleRegisterByGoogle = async () => {
+    setRegisterError('');
     try {
-      await clientSupaBase.auth.signInWithOAuth({
+      const { error } = await clientSupaBase.auth.signInWithOAuth({
         provider: 'google',
         options: {
           //Para Produccion
@@ -65,8 +67,10 @@ export default function Login() {
           // redirectTo: 'https://4gb02f93-5174.brs.devtunnels.ms/login'
         }
       });
+      if (error) setRegisterError(serviceErrorMessage(error, error.message));
     } catch (error) {
       console.error('Error al iniciar sesión con Google:', error);
+      setRegisterError(serviceErrorMessage(error instanceof Error ? error : null));
     }
   };
 

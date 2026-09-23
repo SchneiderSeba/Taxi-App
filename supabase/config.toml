@@ -1,0 +1,7 @@
+project_id = "taxi-app"
+
+[functions.create-preference-mp]
+verify_jwt = false
+
+[functions.mp-webhook]
+verify_jwt = false

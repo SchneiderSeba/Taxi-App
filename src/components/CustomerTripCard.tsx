@@ -44,9 +44,8 @@ export default function CustomerTripCard({ lastRequest }: CustomerTripCardProps)
                         </span>
                         <>
                             <MercadoPagoBtn 
-                              ownerId={lastRequest.ownerId}
+                              tripId={lastRequest.tripId}
                               clientId={lastRequest.customerId}
-                              price={lastRequest.price || 0}
                             />
                         </>
                     </>

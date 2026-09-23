@@ -298,8 +298,10 @@ npm i
 3. Crear archivo `.env` con las claves de Supabase:
 
 ```env
-VITE_SUPABASE_URL=https://xxxx.supabase.co
-VITE_SUPABASE_ANON_KEY=xxxxx
+VITE_PUBLIC_SUPABASE_URL=https://xxxx.supabase.co
+VITE_PUBLIC_SUPABASE_KEY=xxxxx
+VITE_PUBLIC_MERCADO_PAGO_KEY=xxxxx
+VITE_PUBLIC_GOOGLEMAP_KEY=xxxxx
 ```
 
 ### 4️⃣ Configurar Google OAuth en Supabase

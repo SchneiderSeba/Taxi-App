@@ -33,7 +33,7 @@ export interface Profile {
   owner_id: string;
   username: string;
   displayName?: string;
-  email: string;
+  email?: string;
   phone?: string;
   carModel?: string;
   carPlate?: string;

@@ -20,7 +20,7 @@ export default function EarningsReport({ trips, expenses, settings }: EarningsRe
     });
     const dayExpenses = expenses.filter(exp => exp.date === date);
 
-    const income = dayTrips.reduce((sum, trip) => sum + trip.price, 0);
+    const income = dayTrips.reduce((sum, trip) => sum + (trip.price ?? 0), 0);
     const gasExpenses = dayExpenses.reduce((sum, exp) => sum + exp.amount, 0);
 
     return { income, expenses: gasExpenses, net: income - gasExpenses };
@@ -42,7 +42,7 @@ export default function EarningsReport({ trips, expenses, settings }: EarningsRe
       return expDate.getFullYear() === year && expDate.getMonth() === month;
     });
 
-    const income = monthTrips.reduce((sum, trip) => sum + trip.price, 0);
+    const income = monthTrips.reduce((sum, trip) => sum + (trip.price ?? 0), 0);
     const gasExpenses = monthExpenses.reduce((sum, exp) => sum + exp.amount, 0);
     const fixedCosts = settings.insuranceMonthly + settings.registrationMonthly;
     const totalExpenses = gasExpenses + fixedCosts;
