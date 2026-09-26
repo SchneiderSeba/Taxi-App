@@ -84,7 +84,7 @@ export default function ProfileDashboard({ trips }: ProfileDashboardProps) {
   return (
     <div className="space-y-4 sm:space-y-6">
       {/* Navegación de secciones */}
-      <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm overflow-hidden">
+      <div className="overflow-hidden rounded-2xl border border-white/60 bg-white/65 shadow-lg shadow-slate-900/5 backdrop-blur-lg dark:border-white/10 dark:bg-slate-900/65">
         <div className="flex overflow-x-auto scrollbar-hide">
           {(Object.keys(ProfileFunctions) as SectionKey[]).map((key) => {
             const section = ProfileFunctions[key];
@@ -111,7 +111,7 @@ export default function ProfileDashboard({ trips }: ProfileDashboardProps) {
       </div>
 
       {/* Contenido de la sección activa */}
-      <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm overflow-hidden">
+      <div className="overflow-hidden rounded-2xl border border-white/60 bg-white/65 shadow-lg shadow-slate-900/5 backdrop-blur-lg dark:border-white/10 dark:bg-slate-900/65">
         {activeSection === 'tripHistory' && (
           <div className="p-4 sm:p-6">
             <h2 className="text-lg sm:text-xl font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">

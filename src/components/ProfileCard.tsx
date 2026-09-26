@@ -8,7 +8,7 @@ interface ProfileCardProps {
 
 export default function ProfileCard({ profile, onEditField }: ProfileCardProps) {
   return (
-    <div className="max-w-md mx-auto bg-white dark:bg-gray-900 rounded-xl shadow-md overflow-hidden border border-gray-200 dark:border-gray-700 p-6">
+    <div className="mx-auto max-w-md overflow-hidden rounded-2xl border border-white/60 bg-white/70 p-6 shadow-xl shadow-slate-900/10 backdrop-blur-xl dark:border-white/10 dark:bg-slate-950/70">
       <div className="flex items-center space-x-4">
         <div className="relative">
           {profile.pictureUrl ? (

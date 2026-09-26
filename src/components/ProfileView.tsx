@@ -153,20 +153,27 @@ export default function ProfileView({ settings, onUpdateSettings, expenses, onAd
   const modalConfig = modalField ? fieldMeta[modalField] : null;
 
   return (
-    <div className="space-y-4 sm:space-y-6">
-      <div>
-        <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white truncate">{userEmail ?? 'Mi Perfil'}</h1>
-        <p className="text-sm sm:text-base text-gray-600 dark:text-gray-300 mt-1">Gestiona tu configuración y visualiza tus ganancias</p>
-      </div>
+    <div className="space-y-6 sm:space-y-8">
+      <section className="relative overflow-hidden rounded-3xl border border-white/60 bg-white/60 p-5 shadow-2xl shadow-slate-900/10 backdrop-blur-xl dark:border-white/10 dark:bg-slate-950/65 sm:p-8">
+        <div className="absolute -right-16 -top-20 h-56 w-56 rounded-full bg-teal-400/20 blur-3xl" aria-hidden="true" />
+        <div className="relative">
+          <span className="mb-3 inline-flex items-center gap-2 rounded-full bg-emerald-100/90 px-3 py-1.5 text-xs font-bold uppercase tracking-[0.16em] text-emerald-800 dark:bg-emerald-400/15 dark:text-emerald-200">
+            <User2 className="h-3.5 w-3.5" /> Centro del conductor
+          </span>
+          <h1 className="truncate text-3xl font-black tracking-tight text-slate-950 dark:text-white sm:text-5xl">Tu operación, bajo control</h1>
+          <p className="mt-2 max-w-2xl text-sm leading-relaxed text-slate-600 dark:text-slate-300 sm:text-base">Configura tus costos, consulta ganancias y mantén al día los datos que verán tus pasajeros.</p>
+          {userEmail && <p className="mt-4 text-xs font-semibold text-emerald-800 dark:text-emerald-200">{userEmail}</p>}
+        </div>
+      </section>
 
-      <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm">
-        <div className="flex overflow-x-auto border-b border-gray-200 dark:border-gray-700 scrollbar-hide">
+      <div className="overflow-hidden rounded-3xl border border-white/60 bg-white/60 shadow-2xl shadow-slate-900/10 backdrop-blur-xl dark:border-white/10 dark:bg-slate-950/65">
+        <div className="flex gap-2 overflow-x-auto border-b border-slate-200/70 p-2 scrollbar-hide dark:border-white/10">
           <button
             onClick={() => setActiveTab('settings')}
-            className={`flex items-center gap-1.5 sm:gap-2 px-4 sm:px-6 py-3 sm:py-4 font-medium transition-all duration-200 border-b-2 whitespace-nowrap text-sm sm:text-base min-h-[48px] ${
+            className={`flex min-h-[48px] flex-1 items-center justify-center gap-1.5 whitespace-nowrap rounded-xl px-4 py-3 text-sm font-bold transition-all duration-200 sm:gap-2 sm:px-6 sm:text-base ${
               activeTab === 'settings'
-                ? 'border-emerald-600 text-emerald-600'
-                : 'border-transparent text-white/60 hover:text-gray-600'
+                ? 'bg-slate-950 text-white shadow-md dark:bg-white dark:text-slate-950'
+                : 'text-slate-500 hover:bg-white/70 hover:text-slate-950 dark:text-slate-400 dark:hover:bg-white/10 dark:hover:text-white'
             }`}
           >
             <Settings className="w-4 h-4 sm:w-5 sm:h-5 shrink-0" />
@@ -175,10 +182,10 @@ export default function ProfileView({ settings, onUpdateSettings, expenses, onAd
           </button>
           <button
             onClick={() => setActiveTab('earnings')}
-            className={`flex items-center gap-1.5 sm:gap-2 px-4 sm:px-6 py-3 sm:py-4 font-medium transition-all duration-200 border-b-2 whitespace-nowrap text-sm sm:text-base min-h-[48px] ${
+            className={`flex min-h-[48px] flex-1 items-center justify-center gap-1.5 whitespace-nowrap rounded-xl px-4 py-3 text-sm font-bold transition-all duration-200 sm:gap-2 sm:px-6 sm:text-base ${
               activeTab === 'earnings'
-                ? 'border-emerald-600 text-emerald-600'
-                : 'border-transparent text-white/60 hover:text-gray-600'
+                ? 'bg-slate-950 text-white shadow-md dark:bg-white dark:text-slate-950'
+                : 'text-slate-500 hover:bg-white/70 hover:text-slate-950 dark:text-slate-400 dark:hover:bg-white/10 dark:hover:text-white'
             }`}
           >
             <TrendingUp className="w-4 h-4 sm:w-5 sm:h-5 shrink-0" />
@@ -186,10 +193,10 @@ export default function ProfileView({ settings, onUpdateSettings, expenses, onAd
           </button>
           <button
             onClick={() => setActiveTab('profile')}
-            className={`flex items-center gap-1.5 sm:gap-2 px-4 sm:px-6 py-3 sm:py-4 font-medium transition-all duration-200 border-b-2 whitespace-nowrap text-sm sm:text-base min-h-[48px] ${
+            className={`flex min-h-[48px] flex-1 items-center justify-center gap-1.5 whitespace-nowrap rounded-xl px-4 py-3 text-sm font-bold transition-all duration-200 sm:gap-2 sm:px-6 sm:text-base ${
               activeTab === 'profile'
-                ? 'border-emerald-600 text-emerald-600'
-                : 'border-transparent text-white/60 hover:text-gray-600'
+                ? 'bg-slate-950 text-white shadow-md dark:bg-white dark:text-slate-950'
+                : 'text-slate-500 hover:bg-white/70 hover:text-slate-950 dark:text-slate-400 dark:hover:bg-white/10 dark:hover:text-white'
             }`}
           >
             <User2 className="w-4 h-4 sm:w-5 sm:h-5 shrink-0" />
@@ -197,13 +204,13 @@ export default function ProfileView({ settings, onUpdateSettings, expenses, onAd
           </button>
         </div>
 
-        <div className="p-4 sm:p-6">
+        <div className="p-4 sm:p-7">
           {activeTab === 'settings' && (
             <div className="space-y-4 sm:space-y-6">
               <div>
                 <h2 className="text-lg sm:text-xl font-semibold text-gray-900 mb-3 sm:mb-4">Costos Fijos Mensuales</h2>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
-                  <div className="bg-gradient-to-br from-blue-50 to-blue-100/50 rounded-xl p-4 sm:p-5 border border-blue-200">
+                  <div className="rounded-2xl border border-blue-200/80 bg-gradient-to-br from-blue-50/90 to-blue-100/60 p-4 shadow-sm sm:p-5">
                     <div className="flex items-center gap-2 sm:gap-3 mb-2 sm:mb-3">
                       <div className="w-9 h-9 sm:w-10 sm:h-10 bg-blue-600 rounded-lg flex items-center justify-center shrink-0">
                         <Shield className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
@@ -235,7 +242,7 @@ export default function ProfileView({ settings, onUpdateSettings, expenses, onAd
                     )}
                   </div>
 
-                  <div className="bg-gradient-to-br from-purple-50 to-purple-100/50 rounded-xl p-4 sm:p-5 border border-purple-200">
+                  <div className="rounded-2xl border border-purple-200/80 bg-gradient-to-br from-purple-50/90 to-purple-100/60 p-4 shadow-sm sm:p-5">
                     <div className="flex items-center gap-2 sm:gap-3 mb-2 sm:mb-3">
                       <div className="w-9 h-9 sm:w-10 sm:h-10 bg-purple-600 rounded-lg flex items-center justify-center shrink-0">
                         <FileText className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
@@ -271,7 +278,7 @@ export default function ProfileView({ settings, onUpdateSettings, expenses, onAd
 
               <div>
                 <h2 className="text-lg sm:text-xl font-semibold text-gray-900 mb-3 sm:mb-4">Costo por Unidad</h2>
-                <div className="bg-gradient-to-br from-emerald-50 to-emerald-100/50 rounded-xl p-4 sm:p-5 border border-emerald-200">
+                <div className="rounded-2xl border border-emerald-200/80 bg-gradient-to-br from-emerald-50/90 to-emerald-100/60 p-4 shadow-sm sm:p-5">
                   <div className="flex items-center gap-2 sm:gap-3 mb-2 sm:mb-3">
                     <div className="w-9 h-9 sm:w-10 sm:h-10 bg-emerald-600 rounded-lg flex items-center justify-center shrink-0">
                       <Fuel className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
@@ -338,7 +345,7 @@ export default function ProfileView({ settings, onUpdateSettings, expenses, onAd
           {activeTab === 'earnings' && <EarningsReport trips={trips} expenses={expenses} settings={settings} />}
 
           {activeTab === 'profile' && (
-            <>
+            <div className="space-y-6">
               <div>
                 {userProfile ? (
                   <ProfileCard profile={userProfile} onEditField={openEditModal} />
@@ -349,7 +356,7 @@ export default function ProfileView({ settings, onUpdateSettings, expenses, onAd
               <div>
                 <ProfileDashboard trips={trips} />
               </div>
-            </>
+            </div>
           )}
         </div>
       </div>

@@ -25,23 +25,29 @@ export default function TripsView({ trips, onAddTrip, onUpdateTripStatus, dailyE
   const netEarnings = totalIncome - dailyExpenses;
 
   return (
-    <div className="dark:bg-gray-900">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+    <div className="space-y-6 sm:space-y-8">
+      <section className="relative overflow-hidden rounded-3xl border border-white/60 bg-white/60 p-5 shadow-2xl shadow-slate-900/10 backdrop-blur-xl dark:border-white/10 dark:bg-slate-950/65 sm:p-8">
+        <div className="absolute -right-16 -top-20 h-56 w-56 rounded-full bg-emerald-400/20 blur-3xl" aria-hidden="true" />
+        <div className="relative flex flex-col justify-between gap-5 sm:flex-row sm:items-end">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">Mis Viajes</h1>
-          <p className="text-sm sm:text-base text-gray-600 dark:text-gray-300 mt-1">Gestiona tus viajes del día</p>
+          <span className="mb-3 inline-flex items-center gap-2 rounded-full bg-emerald-100/90 px-3 py-1.5 text-xs font-bold uppercase tracking-[0.16em] text-emerald-800 dark:bg-emerald-400/15 dark:text-emerald-200">
+            <MapPin className="h-3.5 w-3.5" /> Panel del conductor
+          </span>
+          <h1 className="text-3xl font-black tracking-tight text-slate-950 dark:text-white sm:text-5xl">Tus viajes de hoy</h1>
+          <p className="mt-2 max-w-2xl text-sm leading-relaxed text-slate-600 dark:text-slate-300 sm:text-base">Acepta nuevas solicitudes, registra viajes y revisa el resultado de tu jornada desde un solo lugar.</p>
         </div>
         <button
           onClick={() => setShowAddModal(true)}
-          className="flex items-center justify-center gap-2 bg-emerald-600 text-white px-4 sm:px-5 py-2.5 rounded-lg font-medium hover:bg-emerald-700 transition-all duration-200 shadow-md hover:shadow-lg dark:bg-emerald-800 dark:hover:bg-emerald-900 w-full sm:w-auto min-h-[44px]"
+          className="flex min-h-[48px] w-full items-center justify-center gap-2 rounded-xl bg-slate-950 px-5 py-3 text-sm font-bold text-white shadow-lg shadow-slate-900/20 transition-all hover:-translate-y-0.5 hover:bg-emerald-700 hover:shadow-xl dark:bg-white dark:text-slate-950 dark:hover:bg-emerald-300 sm:w-auto sm:text-base"
         >
           <Plus className="w-5 h-5 shrink-0" />
           <span className="text-sm sm:text-base">Agregar Viaje</span>
         </button>
-      </div>
+        </div>
+      </section>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-6 sm:mb-8">
-        <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-4 sm:p-6 shadow-sm">
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4 lg:grid-cols-4">
+        <div className="rounded-2xl border border-white/60 bg-white/65 p-4 shadow-lg shadow-slate-900/5 backdrop-blur-xl dark:border-white/10 dark:bg-slate-950/65 sm:p-6">
           <div className="flex items-center gap-2 sm:gap-3 mb-2">
             <div className="w-9 h-9 sm:w-10 sm:h-10 bg-blue-100 dark:bg-blue-900 rounded-lg flex items-center justify-center shrink-0">
               <Clock className="w-4 h-4 sm:w-5 sm:h-5 text-blue-600 dark:text-blue-300" />
@@ -51,7 +57,7 @@ export default function TripsView({ trips, onAddTrip, onUpdateTripStatus, dailyE
           <p className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">{pendingTrips.length}</p>
         </div>
 
-        <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-4 sm:p-6 shadow-sm">
+        <div className="rounded-2xl border border-white/60 bg-white/65 p-4 shadow-lg shadow-slate-900/5 backdrop-blur-xl dark:border-white/10 dark:bg-slate-950/65 sm:p-6">
           <div className="flex items-center gap-2 sm:gap-3 mb-2">
             <div className="w-9 h-9 sm:w-10 sm:h-10 bg-emerald-100 dark:bg-emerald-900 rounded-lg flex items-center justify-center shrink-0">
               <CheckCircle className="w-4 h-4 sm:w-5 sm:h-5 text-emerald-600 dark:text-emerald-300" />
@@ -61,7 +67,7 @@ export default function TripsView({ trips, onAddTrip, onUpdateTripStatus, dailyE
           <p className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">{completedTrips.length}</p>
         </div>
 
-        <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-4 sm:p-6 shadow-sm">
+        <div className="rounded-2xl border border-white/60 bg-white/65 p-4 shadow-lg shadow-slate-900/5 backdrop-blur-xl dark:border-white/10 dark:bg-slate-950/65 sm:p-6">
           <div className="flex items-center gap-2 sm:gap-3 mb-2">
             <div className="w-9 h-9 sm:w-10 sm:h-10 bg-emerald-100 dark:bg-emerald-900 rounded-lg flex items-center justify-center shrink-0">
               <DollarSign className="w-4 h-4 sm:w-5 sm:h-5 text-emerald-600 dark:text-emerald-300" />
@@ -71,7 +77,7 @@ export default function TripsView({ trips, onAddTrip, onUpdateTripStatus, dailyE
           <p className="text-2xl sm:text-3xl font-bold text-emerald-600 dark:text-emerald-300">${totalIncome.toFixed(2)}</p>
         </div>
 
-        <div className="bg-gradient-to-br from-emerald-600 to-teal-600 rounded-xl p-4 sm:p-6 shadow-md sm:col-span-2 lg:col-span-1">
+        <div className="rounded-2xl bg-gradient-to-br from-emerald-600 to-teal-700 p-4 shadow-xl shadow-emerald-900/20 sm:col-span-2 sm:p-6 lg:col-span-1">
           <div className="flex items-center gap-2 sm:gap-3 mb-2">
             <div className="w-9 h-9 sm:w-10 sm:h-10 bg-white/20 rounded-lg flex items-center justify-center shrink-0">
               <DollarSign className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
@@ -83,9 +89,9 @@ export default function TripsView({ trips, onAddTrip, onUpdateTripStatus, dailyE
         </div>
       </div>
 
-      <div className="space-y-4">
+      <div className="space-y-5">
         {pendingTrips.length > 0 && (
-          <div>
+          <section className="rounded-3xl border border-white/60 bg-white/55 p-4 shadow-xl shadow-slate-900/5 backdrop-blur-xl dark:border-white/10 dark:bg-slate-950/60 sm:p-6">
             <h2 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white mb-3 flex items-center gap-2">
               <Clock className="w-4 h-4 sm:w-5 sm:h-5 text-blue-600 dark:text-blue-300 shrink-0" />
               Viajes Pendientes
@@ -95,11 +101,11 @@ export default function TripsView({ trips, onAddTrip, onUpdateTripStatus, dailyE
                 <TripCard key={trip.id} trip={trip} onUpdateStatus={onUpdateTripStatus} />
               ))}
             </div>
-          </div>
+          </section>
         )}
 
         {completedTrips.length > 0 && (
-          <div>
+          <section className="rounded-3xl border border-white/60 bg-white/55 p-4 shadow-xl shadow-slate-900/5 backdrop-blur-xl dark:border-white/10 dark:bg-slate-950/60 sm:p-6">
             <h2 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white mb-3 flex items-center gap-2">
               <CheckCircle className="w-4 h-4 sm:w-5 sm:h-5 text-emerald-600 dark:text-emerald-300 shrink-0" />
               Viajes Completados
@@ -109,11 +115,11 @@ export default function TripsView({ trips, onAddTrip, onUpdateTripStatus, dailyE
                 <TripCard key={trip.id} trip={trip} onUpdateStatus={onUpdateTripStatus} />
               ))}
             </div>
-          </div>
+          </section>
         )}
 
         {cancelledTrips.length > 0 && (
-          <div>
+          <section className="rounded-3xl border border-white/60 bg-white/55 p-4 shadow-xl shadow-slate-900/5 backdrop-blur-xl dark:border-white/10 dark:bg-slate-950/60 sm:p-6">
             <h2 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white mb-3 flex items-center gap-2">
               <XCircle className="w-4 h-4 sm:w-5 sm:h-5 text-red-600 dark:text-red-300 shrink-0" />
               Viajes Cancelados
@@ -123,11 +129,11 @@ export default function TripsView({ trips, onAddTrip, onUpdateTripStatus, dailyE
                 <TripCard key={trip.id} trip={trip} onUpdateStatus={onUpdateTripStatus} />
               ))}
             </div>
-          </div>
+          </section>
         )}
 
         {todayTrips.length === 0 && (
-          <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-8 sm:p-12 text-center">
+          <div className="rounded-3xl border border-white/60 bg-white/60 p-8 text-center shadow-2xl shadow-slate-900/10 backdrop-blur-xl dark:border-white/10 dark:bg-slate-950/65 sm:p-12">
             <div className="w-14 h-14 sm:w-16 sm:h-16 bg-gray-100 dark:bg-gray-900 rounded-full flex items-center justify-center mx-auto mb-4">
               <MapPin className="w-7 h-7 sm:w-8 sm:h-8 text-gray-400 dark:text-gray-600" />
             </div>

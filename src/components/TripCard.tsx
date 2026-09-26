@@ -102,7 +102,7 @@ const TripCard: FC<TripCardProps> = ({ trip, onUpdateStatus }) => {
   };
 
   return (
-    <div className={`bg-white dark:bg-gray-900 rounded-xl border-2 ${config.border} p-5 shadow-sm hover:shadow-md transition-all duration-200`}>
+    <div className={`rounded-2xl border ${config.border} bg-white/75 p-5 shadow-md shadow-slate-900/5 backdrop-blur-md transition-all duration-200 hover:-translate-y-0.5 hover:shadow-xl dark:bg-slate-900/75`}>
       <div className="flex items-start justify-between gap-4">
         <div className="flex-1">
           <div className="flex items-center gap-3 mb-3">

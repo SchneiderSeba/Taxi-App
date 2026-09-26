@@ -77,7 +77,7 @@ export default function EarningsReport({ trips, expenses, settings }: EarningsRe
   const todayEarnings = calculateDailyEarnings(today);
 
   return (
-    <div className="dark:bg-gray-900">
+    <div>
       {/* Botones de cambio de vista */}
       <div className="flex gap-2 mb-6">
         <button
@@ -116,7 +116,7 @@ export default function EarningsReport({ trips, expenses, settings }: EarningsRe
               <p className="text-3xl font-bold">${todayEarnings.income.toFixed(2)}</p>
             </div>
 
-            <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6 shadow-sm">
+            <div className="rounded-2xl border border-white/60 bg-white/70 p-6 shadow-lg shadow-slate-900/5 backdrop-blur-lg dark:border-white/10 dark:bg-slate-900/70">
               <div className="flex items-center gap-3 mb-2">
                 <div className="w-10 h-10 bg-orange-100 dark:bg-orange-900 rounded-lg flex items-center justify-center">
                   <Fuel className="w-5 h-5 text-orange-600 dark:text-orange-300" />
@@ -126,7 +126,7 @@ export default function EarningsReport({ trips, expenses, settings }: EarningsRe
               <p className="text-3xl font-bold text-gray-900 dark:text-white">${todayEarnings.expenses.toFixed(2)}</p>
             </div>
 
-            <div className="bg-white dark:bg-gray-800 rounded-xl border-2 border-emerald-200 dark:border-emerald-700 p-6 shadow-sm">
+            <div className="rounded-2xl border border-emerald-200/80 bg-white/70 p-6 shadow-lg shadow-slate-900/5 backdrop-blur-lg dark:border-emerald-700 dark:bg-slate-900/70">
               <div className="flex items-center gap-3 mb-2">
                 <div className="w-10 h-10 bg-emerald-100 dark:bg-emerald-900 rounded-lg flex items-center justify-center">
                   <TrendingUp className="w-5 h-5 text-emerald-600 dark:text-emerald-300" />
@@ -137,7 +137,7 @@ export default function EarningsReport({ trips, expenses, settings }: EarningsRe
             </div>
           </div>
 
-          <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6 shadow-sm">
+          <div className="rounded-2xl border border-white/60 bg-white/70 p-6 shadow-lg shadow-slate-900/5 backdrop-blur-lg dark:border-white/10 dark:bg-slate-900/70">
             <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
               <Calendar className="w-5 h-5 text-emerald-600 dark:text-emerald-300" />
               Últimos 7 Días
@@ -190,7 +190,7 @@ export default function EarningsReport({ trips, expenses, settings }: EarningsRe
               <p className="text-sm text-emerald-50 mt-1">{currentMonthEarnings.tripsCount} viajes</p>
             </div>
 
-            <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6 shadow-sm">
+            <div className="rounded-2xl border border-white/60 bg-white/70 p-6 shadow-lg shadow-slate-900/5 backdrop-blur-lg dark:border-white/10 dark:bg-slate-900/70">
               <div className="flex items-center gap-3 mb-2">
                 <div className="w-10 h-10 bg-orange-100 dark:bg-orange-900 rounded-lg flex items-center justify-center">
                   <Fuel className="w-5 h-5 text-orange-600 dark:text-orange-300" />
@@ -200,7 +200,7 @@ export default function EarningsReport({ trips, expenses, settings }: EarningsRe
               <p className="text-3xl font-bold text-gray-900 dark:text-white">${currentMonthEarnings.gasExpenses.toFixed(2)}</p>
             </div>
 
-            <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6 shadow-sm">
+            <div className="rounded-2xl border border-white/60 bg-white/70 p-6 shadow-lg shadow-slate-900/5 backdrop-blur-lg dark:border-white/10 dark:bg-slate-900/70">
               <div className="flex items-center gap-3 mb-2">
                 <div className="w-10 h-10 bg-blue-100 dark:bg-blue-900 rounded-lg flex items-center justify-center">
                   <Shield className="w-5 h-5 text-blue-600 dark:text-blue-300" />
@@ -211,7 +211,7 @@ export default function EarningsReport({ trips, expenses, settings }: EarningsRe
               <p className="text-xs text-gray-500 dark:text-gray-300 mt-1">Seguro + Patente</p>
             </div>
 
-            <div className="bg-white dark:bg-gray-800 rounded-xl border-2 border-emerald-200 dark:border-emerald-700 p-6 shadow-sm">
+            <div className="rounded-2xl border border-emerald-200/80 bg-white/70 p-6 shadow-lg shadow-slate-900/5 backdrop-blur-lg dark:border-emerald-700 dark:bg-slate-900/70">
               <div className="flex items-center gap-3 mb-2">
                 <div className="w-10 h-10 bg-emerald-100 dark:bg-emerald-900 rounded-lg flex items-center justify-center">
                   <TrendingUp className="w-5 h-5 text-emerald-600 dark:text-emerald-300" />
@@ -222,7 +222,7 @@ export default function EarningsReport({ trips, expenses, settings }: EarningsRe
             </div>
           </div>
 
-          <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6 shadow-sm mb-6">
+          <div className="mb-6 rounded-2xl border border-white/60 bg-white/70 p-6 shadow-lg shadow-slate-900/5 backdrop-blur-lg dark:border-white/10 dark:bg-slate-900/70">
             <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Desglose de Gastos</h3>
             <div className="space-y-3">
               <div className="flex items-center justify-between p-4 bg-orange-50 dark:bg-orange-900 rounded-lg border border-orange-200 dark:border-orange-700">
@@ -262,7 +262,7 @@ export default function EarningsReport({ trips, expenses, settings }: EarningsRe
             </div>
           </div>
 
-          <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6 shadow-sm">
+          <div className="rounded-2xl border border-white/60 bg-white/70 p-6 shadow-lg shadow-slate-900/5 backdrop-blur-lg dark:border-white/10 dark:bg-slate-900/70">
             <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
               <Calendar className="w-5 h-5 text-emerald-600 dark:text-emerald-300" />
               Últimos 6 Meses
