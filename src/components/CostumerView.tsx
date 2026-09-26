@@ -70,6 +70,8 @@ const initialFormState: TripRequestForm = {
   customerId: '' // This will be set from localStorage`
 };
 
+const CUSTOMER_ID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+
 const CostumerView = () => {
   const [drivers, setDrivers] = useState<Profile[]>([]);
   const [loading, setLoading] = useState(true);
@@ -103,7 +105,7 @@ const CostumerView = () => {
 // Guardarlo customerId en localstorage
   useEffect(() => {
     const storedCustomerId = localStorage.getItem('customerId');
-    if (!storedCustomerId) {
+    if (!storedCustomerId || !CUSTOMER_ID_PATTERN.test(storedCustomerId)) {
       const newCustomerId = crypto.randomUUID();
       localStorage.setItem('customerId', newCustomerId);
       setCustomerId(newCustomerId);
