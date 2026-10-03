@@ -14,6 +14,6 @@ export function getAppUrl(): string {
   }
 }
 
-export function getAuthRedirectUrl(): string {
-  return `${getAppUrl()}/login`;
+export function getAuthRedirectUrl(path = '/login'): string {
+  return `${getAppUrl()}${path}`;
 }

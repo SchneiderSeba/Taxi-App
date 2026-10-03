@@ -2,28 +2,45 @@ import { Chrome } from 'lucide-react';
 import { useState } from 'react';
 import BackGround from './UI/BackGround';
 import { serviceErrorMessage } from '../lib/serviceError';
-import { sendMagicLink, signInWithGoogle } from '../features/auth/auth.service';
+import { sendMagicLink, signInWithGoogle, signInWithPassword } from '../features/auth/auth.service';
 
 
 export default function Login() {
   const [registerEmail, setRegisterEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [registerError, setRegisterError] = useState('');
   const [registerSuccess, setRegisterSuccess] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleRegister = async (e: React.FormEvent) => {
+  const handlePasswordLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setRegisterError('');
     setRegisterSuccess('');
-    if (!registerEmail) {
+    if (!registerEmail || !password) {
       setRegisterError('Completa todos los campos.');
       return;
     }
     setIsSubmitting(true);
     try {
-      await sendMagicLink(registerEmail);
-      setRegisterSuccess('Revisa tu correo para continuar el registro.');
-      setRegisterEmail('');
+      await signInWithPassword(registerEmail.trim(), password);
+    } catch (error) {
+      setRegisterError(serviceErrorMessage(error instanceof Error ? error : null));
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleMagicLink = async () => {
+    setRegisterError('');
+    setRegisterSuccess('');
+    if (!registerEmail.trim()) {
+      setRegisterError('Ingresa tu correo para recibir el enlace.');
+      return;
+    }
+    setIsSubmitting(true);
+    try {
+      await sendMagicLink(registerEmail.trim());
+      setRegisterSuccess('Revisa tu correo para continuar.');
     } catch (error) {
       setRegisterError(serviceErrorMessage(error instanceof Error ? error : null));
     } finally {
@@ -83,10 +100,10 @@ export default function Login() {
             {/* Sección de registro con email */}
             <div className="my-6 sm:my-8 flex items-center gap-2">
               <div className="flex-1 h-px bg-gray-200 dark:bg-gray-700" />
-              <span className="text-gray-400 text-xs sm:text-sm whitespace-nowrap">o registrarse con email</span>
+              <span className="text-gray-400 text-xs sm:text-sm whitespace-nowrap">o acceder con credenciales</span>
               <div className="flex-1 h-px bg-gray-200 dark:bg-gray-700" />
             </div>
-            <form onSubmit={handleRegister} className="space-y-3 sm:space-y-4">
+            <form onSubmit={handlePasswordLogin} className="space-y-3 sm:space-y-4">
               <input
                 type="email"
                 className="w-full rounded-lg border border-gray-300 dark:border-gray-700 bg-white/25 dark:bg-gray-800 px-3 sm:px-4 py-2.5 sm:py-3 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-emerald-400 text-sm sm:text-base min-h-[44px]"
@@ -95,14 +112,14 @@ export default function Login() {
                 onChange={e => setRegisterEmail(e.target.value)}
                 autoComplete="email"
               />
-              {/* <input
+              <input
                 type="password"
-                className="w-full rounded-lg border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 px-4 py-3 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-emerald-400"
+                className="w-full rounded-lg border border-gray-300 dark:border-gray-700 bg-white/25 dark:bg-gray-800 px-4 py-3 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-emerald-400"
                 placeholder="Contraseña"
-                value={registerPassword}
-                onChange={e => setRegisterPassword(e.target.value)}
-                autoComplete="new-password"
-              /> */}
+                value={password}
+                onChange={e => setPassword(e.target.value)}
+                autoComplete="current-password"
+              />
               {registerError && <p className="text-red-600 text-xs sm:text-sm">{registerError}</p>}
               {registerSuccess && <p className="text-emerald-600 text-xs sm:text-sm">{registerSuccess}</p>}
               <button
@@ -110,7 +127,10 @@ export default function Login() {
                 disabled={isSubmitting}
                 className="w-full bg-emerald-600 hover:bg-emerald-700 dark:bg-emerald-800 dark:hover:bg-emerald-900 text-white font-semibold rounded-lg py-2.5 sm:py-3 transition-colors text-sm sm:text-base min-h-[48px]"
               >
-                {isSubmitting ? 'Procesando...' : 'Registrarse'}
+                {isSubmitting ? 'Procesando...' : 'Ingresar al panel'}
+              </button>
+              <button type="button" onClick={handleMagicLink} disabled={isSubmitting} className="w-full rounded-lg border border-emerald-700 px-4 py-3 text-sm font-semibold text-emerald-900 hover:bg-white/30 disabled:opacity-60 dark:text-emerald-200">
+                Enviarme un enlace de acceso
               </button>
             </form>
 
@@ -121,7 +141,7 @@ export default function Login() {
 
           <div className="mt-6 sm:mt-8 text-center">
             <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-300">
-              Sistema de gestión para taxistas profesionales
+              Acceso exclusivo para conductores registrados
             </p>
           </div>
         </div>

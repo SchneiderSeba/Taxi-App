@@ -8,9 +8,12 @@ import {
   Send,
   Clock,
   CheckCircle,
+  LogIn,
   Moon,
-  Sun
+  Sun,
+  UserCircle,
 } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import type { Profile } from '../types';
 import CustomerTripCard from './CustomerTripCard';
 import { NewTripForm } from './NewTripForm';
@@ -22,6 +25,8 @@ import {
   requestCustomerTrip,
   type CustomerTrip,
 } from '../features/drivers/driver.service';
+import { useAuth } from '../features/auth/useAuth';
+import { getCustomerProfile, type CustomerProfile } from '../features/customer/customer-profile.service';
 export interface TripRequestForm {
   passengerName: string;
   pickup?: string;
@@ -45,6 +50,7 @@ const initialFormState: TripRequestForm = {
 const CUSTOMER_ID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
 const CustomerView = () => {
+  const { accountType, isAuthenticated, user } = useAuth();
   const [drivers, setDrivers] = useState<Profile[]>([]);
   const [loading, setLoading] = useState(true);
   const [listError, setListError] = useState<string | null>(null);
@@ -56,11 +62,16 @@ const CustomerView = () => {
   const [formError, setFormError] = useState<string | null>(null);
   const [lastRequest, setLastRequest] = useState<RequestStatusCard | null>(null);
   const [darkMode, setDarkMode] = useState(false);
+  const [customerProfile, setCustomerProfile] = useState<CustomerProfile | null>(null);
   
 // Generar un id unico para el Customer 
   const [customerId, setCustomerId] = useState<string | null>(null);
 // Guardarlo customerId en localstorage
   useEffect(() => {
+    if (user && accountType === 'customer') {
+      setCustomerId(user.id);
+      return;
+    }
     const storedCustomerId = localStorage.getItem('customerId');
     if (!storedCustomerId || !CUSTOMER_ID_PATTERN.test(storedCustomerId)) {
       const newCustomerId = crypto.randomUUID();
@@ -69,7 +80,19 @@ const CustomerView = () => {
     } else {
       setCustomerId(storedCustomerId);
     }
-  }, []);
+  }, [accountType, user]);
+
+  useEffect(() => {
+    if (!user || accountType !== 'customer') {
+      setCustomerProfile(null);
+      return;
+    }
+    let active = true;
+    void getCustomerProfile(user.id)
+      .then((profile) => { if (active) setCustomerProfile(profile); })
+      .catch(() => { if (active) setCustomerProfile(null); });
+    return () => { active = false; };
+  }, [accountType, user]);
 
   const loadLastRequest = useCallback(async (id: string) => {
     try {
@@ -143,7 +166,11 @@ const CustomerView = () => {
 
   const handleOpenRequest = (driver: Profile) => {
     setSelectedDriver(driver);
-    setForm(initialFormState);
+    setForm({
+      ...initialFormState,
+      passengerName: customerProfile?.full_name ?? '',
+      phone: customerProfile?.phone ?? '',
+    });
     setConfirmation(null);
     setFormError(null);
   };
@@ -217,7 +244,19 @@ const CustomerView = () => {
       
       <div className="relative min-h-screen bg-transparent">
         
-        <div className="flex justify-end px-3 sm:px-6 pt-4 sm:pt-6">
+        <div className="flex justify-end gap-2 px-3 sm:px-6 pt-4 sm:pt-6">
+          {isAuthenticated ? (
+            <Link
+              to={accountType === 'driver' ? '/trips' : '/customer/profile'}
+              className="inline-flex min-h-[40px] items-center gap-2 rounded-full border border-white/60 bg-white/60 px-4 py-2 text-xs font-bold text-slate-800 shadow-sm backdrop-blur hover:bg-white/80 sm:text-sm"
+            >
+              <UserCircle className="h-4 w-4" /> {accountType === 'driver' ? 'Panel conductor' : 'Mi perfil'}
+            </Link>
+          ) : (
+            <Link to="/customer/login" className="inline-flex min-h-[40px] items-center gap-2 rounded-full bg-slate-950 px-4 py-2 text-xs font-bold text-white shadow-sm hover:bg-emerald-700 sm:text-sm">
+              <LogIn className="h-4 w-4" /> Ingresar
+            </Link>
+          )}
           
           <button
             type="button"
@@ -232,7 +271,7 @@ const CustomerView = () => {
         <section className="px-4 sm:px-6 pt-8 sm:pt-16 pb-6 sm:pb-10 text-center max-w-4xl mx-auto">
           <span className="inline-flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-1.5 rounded-full bg-emerald-100 text-emerald-700 text-xs sm:text-sm font-semibold mb-3 sm:mb-4">
             <Clock className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0" />
-            Solicita tu viaje sin registrarte
+            {isAuthenticated && accountType === 'customer' ? 'Tu cuenta está sincronizada' : 'Solicita tu viaje sin registrarte'}
           </span>
           <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-extrabold text-gray-900 dark:text-white mb-3 sm:mb-4 leading-tight">
             Encuentra conductores de confianza en segundos

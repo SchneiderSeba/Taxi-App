@@ -2,11 +2,14 @@ import { useCallback, useEffect, useMemo, useState, type ReactNode } from 'react
 import type { User } from '@supabase/supabase-js';
 import { serviceErrorMessage } from '../../lib/serviceError';
 import { AuthContext } from './auth-context';
-import { ensureUserProfile, getCurrentSession, signOut, subscribeToAuthChanges } from './auth.service';
+import { getCurrentSession, signOut, subscribeToAuthChanges } from './auth.service';
+import { ensureCustomerProfile, hasDriverProfile } from '../customer/customer-profile.service';
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
-  const [isInitializing, setIsInitializing] = useState(true);
+  const [accountType, setAccountType] = useState<'driver' | 'customer' | null>(null);
+  const [sessionLoading, setSessionLoading] = useState(true);
+  const [accountLoading, setAccountLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -20,13 +23,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         if (active) setError(serviceErrorMessage(sessionError instanceof Error ? sessionError : null));
       })
       .finally(() => {
-        if (active) setIsInitializing(false);
+        if (active) setSessionLoading(false);
       });
 
     const subscription = subscribeToAuthChanges((_event, session) => {
       if (!active) return;
       setUser(session?.user ?? null);
-      setIsInitializing(false);
+      setSessionLoading(false);
     });
 
     return () => {
@@ -36,24 +39,55 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   useEffect(() => {
-    if (!user) return;
-    void ensureUserProfile(user).catch((profileError: unknown) => {
-      setError(serviceErrorMessage(profileError instanceof Error ? profileError : null));
-    });
+    if (!user) {
+      setAccountType(null);
+      setAccountLoading(false);
+      return;
+    }
+
+    let active = true;
+    setAccountLoading(true);
+    void hasDriverProfile(user.id)
+      .then(async (isDriver) => {
+        if (isDriver) return 'driver' as const;
+        await ensureCustomerProfile(user.id, {
+          fullName: typeof user.user_metadata.full_name === 'string' ? user.user_metadata.full_name : undefined,
+          phone: typeof user.user_metadata.phone === 'string' ? user.user_metadata.phone : undefined,
+        });
+        return 'customer' as const;
+      })
+      .then((type) => {
+        if (active) {
+          setAccountType(type);
+          setError(null);
+        }
+      })
+      .catch((profileError: unknown) => {
+        if (active) setError(serviceErrorMessage(profileError instanceof Error ? profileError : null));
+      })
+      .finally(() => {
+        if (active) setAccountLoading(false);
+      });
+
+    return () => { active = false; };
   }, [user]);
 
   const logout = useCallback(async () => {
     await signOut();
     setUser(null);
+    setAccountType(null);
   }, []);
 
+  const isInitializing = sessionLoading || Boolean(user && accountLoading);
+
   const value = useMemo(() => ({
+    accountType,
     user,
     isAuthenticated: Boolean(user),
     isInitializing,
     error,
     logout,
-  }), [user, isInitializing, error, logout]);
+  }), [accountType, user, isInitializing, error, logout]);
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }

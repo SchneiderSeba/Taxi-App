@@ -3,7 +3,7 @@ import { Loader2, Send } from 'lucide-react';
 import type { TripRequestForm } from './CustomerView';
 import { Profile } from '../types';
 import { useEffect, useRef, useState } from 'react';
-import { loadGoogleMaps } from '../lib/GoogleMapsServices';
+import { loadPlacesLibrary } from '../lib/GoogleMapsServices';
 
 interface NewTripFormProps {
   handleSubmitRequest: (e: React.FormEvent) => void;
@@ -59,6 +59,7 @@ export const NewTripForm: React.FC<NewTripFormProps> = ({
   const pickupInputRef = useRef<HTMLInputElement>(null);
   const destinationInputRef = useRef<HTMLInputElement>(null);
   const [placesReady, setPlacesReady] = useState(false);
+  const [placesError, setPlacesError] = useState(false);
   const [pickupPredictions, setPickupPredictions] = useState<AutocompleteSuggestionLike[]>([]);
   const [destinationPredictions, setDestinationPredictions] = useState<AutocompleteSuggestionLike[]>([]);
   const [showPickupDropdown, setShowPickupDropdown] = useState(false);
@@ -71,14 +72,8 @@ export const NewTripForm: React.FC<NewTripFormProps> = ({
     let mounted = true;
 
     const initPlacesAPI = async () => {
-      await loadGoogleMaps();
-
-      if (!mounted || !window.google?.maps?.places) {
-        return;
-      }
-
       try {
-        const placesLibrary = await window.google.maps.importLibrary('places') as unknown as {
+        const placesLibrary = await loadPlacesLibrary() as unknown as {
           AutocompleteSuggestion: AutocompleteSuggestionApi;
           AutocompleteSessionToken: AutocompleteSessionTokenConstructor;
         };
@@ -90,8 +85,8 @@ export const NewTripForm: React.FC<NewTripFormProps> = ({
         if (mounted) {
           setPlacesReady(true);
         }
-      } catch (error) {
-        console.error('[NewTripForm] Error initializing Places API:', error);
+      } catch {
+        if (mounted) setPlacesError(true);
       }
     };
 
@@ -200,9 +195,8 @@ export const NewTripForm: React.FC<NewTripFormProps> = ({
           value={pickup}
           onChange={(e) => handlePickupInputChange(e.target.value)}
           onFocus={() => pickup.length >= 2 && setShowPickupDropdown(true)}
-          disabled={!placesReady}
           className="mt-1 w-full px-3 sm:px-4 py-2.5 sm:py-3 rounded-xl border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-sm sm:text-base min-h-[44px]"
-          placeholder={placesReady ? 'Dirección exacta' : 'Cargando...'}
+          placeholder="Dirección exacta"
         />
         {showPickupDropdown && pickupPredictions.length > 0 && (
           <ul className="absolute z-50 w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl mt-2 shadow-lg max-h-64 overflow-y-auto">
@@ -244,9 +238,8 @@ export const NewTripForm: React.FC<NewTripFormProps> = ({
           value={destination}
           onChange={(e) => handleDestinationInputChange(e.target.value)}
           onFocus={() => destination.length >= 2 && setShowDestinationDropdown(true)}
-          disabled={!placesReady}
           className="mt-1 w-full px-3 sm:px-4 py-2.5 sm:py-3 rounded-xl border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-sm sm:text-base min-h-[44px]"
-          placeholder={placesReady ? 'Ciudad o dirección' : 'Cargando...'}
+          placeholder="Ciudad o dirección"
         />
         {showDestinationDropdown && destinationPredictions.length > 0 && (
           <ul className="absolute z-50 w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl mt-2 shadow-lg max-h-64 overflow-y-auto">
@@ -313,6 +306,12 @@ export const NewTripForm: React.FC<NewTripFormProps> = ({
           {formError}
         </p>
       )}
+
+      {placesError ? (
+        <p className="rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-800">
+          Las sugerencias automáticas no están disponibles, pero puedes escribir las direcciones manualmente.
+        </p>
+      ) : null}
 
       <div className="flex gap-2 sm:gap-3 pt-2">
         <button

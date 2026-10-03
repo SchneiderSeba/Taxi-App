@@ -6,13 +6,13 @@ import { createDriverTrip, listDriverTrips, subscribeToDriverTrips, updateDriver
 import { TripsContext } from './trips-context';
 
 export function TripsProvider({ children }: { children: ReactNode }) {
-  const { user } = useAuth();
+  const { user, accountType } = useAuth();
   const [trips, setTrips] = useState<Trip[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const refreshTrips = useCallback(async () => {
-    if (!user) {
+    if (!user || accountType !== 'driver') {
       setTrips([]);
       return;
     }
@@ -25,10 +25,10 @@ export function TripsProvider({ children }: { children: ReactNode }) {
     } finally {
       setLoading(false);
     }
-  }, [user]);
+  }, [accountType, user]);
 
   useEffect(() => {
-    if (!user) {
+    if (!user || accountType !== 'driver') {
       setTrips([]);
       return;
     }
@@ -37,19 +37,19 @@ export function TripsProvider({ children }: { children: ReactNode }) {
     return subscribeToDriverTrips(user.id, () => {
       void refreshTrips();
     });
-  }, [user, refreshTrips]);
+  }, [accountType, user, refreshTrips]);
 
   const addTrip = useCallback(async (trip: NewDriverTrip) => {
-    if (!user) throw new Error('La sesión ya no está disponible.');
+    if (!user || accountType !== 'driver') throw new Error('La sesión de conductor ya no está disponible.');
     const created = await createDriverTrip(user.id, trip);
     setTrips((current) => [created, ...current]);
-  }, [user]);
+  }, [accountType, user]);
 
   const updateTrip = useCallback(async (id: number, done: TripStatus, price?: number) => {
-    if (!user) throw new Error('La sesión ya no está disponible.');
+    if (!user || accountType !== 'driver') throw new Error('La sesión de conductor ya no está disponible.');
     const updated = await updateDriverTrip(user.id, id, { done, price });
     setTrips((current) => current.map((trip) => trip.id === id ? updated : trip));
-  }, [user]);
+  }, [accountType, user]);
 
   const value = useMemo(() => ({ trips, loading, error, refreshTrips, addTrip, updateTrip }), [trips, loading, error, refreshTrips, addTrip, updateTrip]);
   return <TripsContext.Provider value={value}>{children}</TripsContext.Provider>;

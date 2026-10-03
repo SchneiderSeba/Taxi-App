@@ -6,14 +6,14 @@ import { useAuth } from '../auth/useAuth';
 import { DEFAULT_SETTINGS, getDriverSettings, loadCachedSettings, saveDriverSettings } from '../settings/settings.service';
 
 export function useDriverFinances() {
-  const { user } = useAuth();
+  const { user, accountType } = useAuth();
   const [expenses, setExpenses] = useState<Expense[]>([]);
   const [settings, setSettings] = useState<UserSettings>(() => loadCachedSettings());
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!user) {
+    if (!user || accountType !== 'driver') {
       setExpenses([]);
       setSettings(loadCachedSettings());
       return;
@@ -36,19 +36,19 @@ export function useDriverFinances() {
       });
 
     return () => { active = false; };
-  }, [user]);
+  }, [accountType, user]);
 
   const addExpense = useCallback(async (expense: Omit<Expense, 'id' | 'date' | 'owner_id'>) => {
-    if (!user) throw new Error('La sesión ya no está disponible.');
+    if (!user || accountType !== 'driver') throw new Error('La sesión de conductor ya no está disponible.');
     const created = await createExpense(user.id, expense);
     setExpenses((current) => [created, ...current]);
-  }, [user]);
+  }, [accountType, user]);
 
   const updateSettings = useCallback(async (nextSettings: UserSettings) => {
-    if (!user) throw new Error('La sesión ya no está disponible.');
+    if (!user || accountType !== 'driver') throw new Error('La sesión de conductor ya no está disponible.');
     await saveDriverSettings(user.id, nextSettings);
     setSettings(nextSettings);
-  }, [user]);
+  }, [accountType, user]);
 
   return { expenses, settings, loading, error, addExpense, updateSettings };
 }

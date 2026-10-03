@@ -1,7 +1,7 @@
 import { lazy, Suspense, useCallback, type ReactNode } from 'react';
 import { Navigate, Route, Routes, useNavigate } from 'react-router-dom';
 import Layout from './components/Layout';
-import { ProtectedRoute } from './features/auth/ProtectedRoute';
+import { CustomerProtectedRoute, ProtectedRoute } from './features/auth/ProtectedRoute';
 import { useAuth } from './features/auth/useAuth';
 import { useDriverFinances } from './features/profile/useDriverFinances';
 import { useTrips } from './features/trips/useTrips';
@@ -12,6 +12,8 @@ import { useToast } from './shared/ui/useToast';
 import type { Expense, Trip, TripStatus, UserSettings } from './types';
 
 const CustomerView = lazy(() => import('./components/CustomerView'));
+const CustomerLogin = lazy(() => import('./components/CustomerLogin'));
+const CustomerProfile = lazy(() => import('./components/CustomerProfile'));
 const Login = lazy(() => import('./components/Login'));
 const Payment = lazy(() => import('./components/Payment').then((module) => ({ default: module.Payment })));
 const ProfileView = lazy(() => import('./components/ProfileView'));
@@ -19,7 +21,7 @@ const TripsView = lazy(() => import('./components/TripsView'));
 
 function App() {
   const navigate = useNavigate();
-  const { user, isAuthenticated, isInitializing, logout, error: authError } = useAuth();
+  const { accountType, user, isAuthenticated, isInitializing, logout, error: authError } = useAuth();
   const { trips, loading: tripsLoading, error: tripsError, addTrip, updateTrip } = useTrips();
   const {
     expenses,
@@ -119,8 +121,10 @@ function App() {
     <Suspense fallback={<FullPageLoader />}>
       <Routes>
         <Route path="/customer" element={<CustomerView />} />
-        <Route path="/login" element={isAuthenticated ? <Navigate to="/trips" replace /> : <Login />} />
-        <Route path="/" element={<Navigate to={isAuthenticated ? '/trips' : '/login'} replace />} />
+        <Route path="/customer/login" element={isAuthenticated ? <Navigate to={accountType === 'driver' ? '/trips' : '/customer'} replace /> : <CustomerLogin />} />
+        <Route path="/customer/profile" element={<CustomerProtectedRoute><CustomerProfile /></CustomerProtectedRoute>} />
+        <Route path="/login" element={isAuthenticated ? <Navigate to={accountType === 'driver' ? '/trips' : '/customer'} replace /> : <Login />} />
+        <Route path="/" element={<Navigate to={isAuthenticated ? (accountType === 'driver' ? '/trips' : '/customer') : '/customer'} replace />} />
         <Route
           path="/trips"
           element={driverLayout('trips', (
