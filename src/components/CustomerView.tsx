@@ -11,15 +11,17 @@ import {
   Moon,
   Sun
 } from 'lucide-react';
-import { clientSupaBase } from '../supabase/client';
-import type { Profile, Trip } from '../types';
+import type { Profile } from '../types';
 import CustomerTripCard from './CustomerTripCard';
-// import { setOptions } from '@googlemaps/js-api-loader';
-// import { NewTripForm } from './NewTripForm';
-import { NewTripFormV2 } from './NewTripFormV2';
-import { loadGoogleMaps } from '../lib/GoogleMapsServices';
+import { NewTripForm } from './NewTripForm';
 import BackGround from './UI/BackGround';
 import { serviceErrorMessage } from '../lib/serviceError';
+import {
+  getLastCustomerTrip,
+  listAvailableDrivers,
+  requestCustomerTrip,
+  type CustomerTrip,
+} from '../features/drivers/driver.service';
 export interface TripRequestForm {
   passengerName: string;
   pickup?: string;
@@ -29,37 +31,7 @@ export interface TripRequestForm {
   customerId: string;
 }
 
-export interface RequestStatusCard {
-  tripId: number;
-  driverName: string;
-  pickup?: string;
-  destination?: string;
-  preferredTime?: string;
-  createdAt: string;
-  status: Trip['done'];
-  customerId: string;
-  ownerId: string; // ID del driver
-  price?: number;
-  driverAvailable?: boolean;
-}
-
-interface CustomerTripRow {
-  trip_id: number;
-  done: Trip['done'];
-  created_at: string;
-  owner_id: string;
-  pickup?: string;
-  destination?: string;
-  preferred_time?: string;
-  price?: number;
-  driver_name?: string;
-  driver_available?: boolean;
-}
-
-interface RequestedTripRow {
-  trip_id: number;
-  created_at: string;
-}
+export type RequestStatusCard = CustomerTrip;
 
 const initialFormState: TripRequestForm = {
   passengerName: '',
@@ -67,12 +39,12 @@ const initialFormState: TripRequestForm = {
   destination: '',
   phone: '',
   preferredTime: '',
-  customerId: '' // This will be set from localStorage`
+  customerId: '' // Se completa con el identificador persistido del cliente.
 };
 
 const CUSTOMER_ID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
-const CostumerView = () => {
+const CustomerView = () => {
   const [drivers, setDrivers] = useState<Profile[]>([]);
   const [loading, setLoading] = useState(true);
   const [listError, setListError] = useState<string | null>(null);
@@ -85,21 +57,6 @@ const CostumerView = () => {
   const [lastRequest, setLastRequest] = useState<RequestStatusCard | null>(null);
   const [darkMode, setDarkMode] = useState(false);
   
-  // useEffect(() => {
-  //   setOptions({
-  //     key: import.meta.env.VITE_PUBLIC_GOOGLEMAP_KEY,
-  //   });
-  // }, []);
-
-  useEffect(() => {
-    const load = async () => {
-      console.log('[CostumerView] calling loadGoogleMaps()');
-      await loadGoogleMaps();
-      console.log('[CostumerView] loadGoogleMaps() resolved');
-    };
-    load();
-  }, []);
-
 // Generar un id unico para el Customer 
   const [customerId, setCustomerId] = useState<string | null>(null);
 // Guardarlo customerId en localstorage
@@ -109,42 +66,35 @@ const CostumerView = () => {
       const newCustomerId = crypto.randomUUID();
       localStorage.setItem('customerId', newCustomerId);
       setCustomerId(newCustomerId);
-      console.log('Nuevo customerId generado:', newCustomerId);
     } else {
       setCustomerId(storedCustomerId);
-      console.log('customerId recuperado de localStorage:', storedCustomerId);
     }
   }, []);
 
   const loadLastRequest = useCallback(async (id: string) => {
-    const { data: rawTripData, error } = await clientSupaBase
-      .rpc('get_customer_last_trip', { p_customer_id: id })
-      .maybeSingle();
-
-    if (error) {
+    try {
+      const request = await getLastCustomerTrip(id);
+      if (request) setLastRequest(request);
+      return request;
+    } catch (error) {
       console.error('Error loading customer request', error);
       return null;
     }
+  }, []);
 
-    const tripData = rawTripData as CustomerTripRow | null;
-    if (!tripData) return null;
-
-    const request: RequestStatusCard = {
-      tripId: tripData.trip_id,
-      driverName: tripData.driver_name || 'Conductor',
-      pickup: tripData.pickup,
-      destination: tripData.destination,
-      preferredTime: tripData.preferred_time || 'N/D',
-      createdAt: tripData.created_at,
-      status: tripData.done as Trip['done'],
-      customerId: id,
-      ownerId: tripData.owner_id,
-      price: tripData.price,
-      driverAvailable: tripData.driver_available ?? false
-    };
-
-    setLastRequest(request);
-    return request;
+  const loadDrivers = useCallback(async () => {
+    setLoading(true);
+    setListError(null);
+    try {
+      setDrivers(await listAvailableDrivers());
+    } catch (error) {
+      setListError(serviceErrorMessage(
+        error instanceof Error ? error : null,
+        'No pudimos cargar la lista de conductores. Intenta nuevamente en unos segundos.'
+      ));
+    } finally {
+      setLoading(false);
+    }
   }, []);
 
   // Load last request when customerId is available
@@ -154,33 +104,14 @@ const CostumerView = () => {
 
 
   useEffect(() => {
-    const fetchDrivers = async () => {
-      setLoading(true);
-      setListError(null);
+    void loadDrivers();
 
-      const { data, error: supaError } = await clientSupaBase.rpc('list_available_drivers');
-
-      if (supaError) {
-        console.error('Error loading drivers', supaError);
-        setListError(serviceErrorMessage(
-          supaError,
-          'No pudimos cargar la lista de conductores. Intenta nuevamente en unos segundos.'
-        ));
-      } else if (data) {
-        setDrivers(data as Profile[]);
-      }
-
-      setLoading(false);
-    };
-
-    fetchDrivers();
-
-    const interval = window.setInterval(fetchDrivers, 30_000);
+    const interval = window.setInterval(() => { void loadDrivers(); }, 30_000);
 
     return () => {
       window.clearInterval(interval);
     };
-  }, []);
+  }, [loadDrivers]);
 
   // Poll for trip status updates when there's an active request
   useEffect(() => {
@@ -239,42 +170,36 @@ const CostumerView = () => {
     setSubmitting(true);
     setFormError(null);
 
-    const { error: supaError, data: rawData } = await clientSupaBase
-      .rpc('request_trip', {
-        p_customer_id: customerId,
-        p_owner_id: selectedDriver.owner_id,
-        p_name: passengerName.trim(),
-        p_pickup: pickup.trim(),
-        p_destination: destination.trim(),
-        p_passenger_phone: phone?.trim() || null,
-        p_preferred_time: preferredTime?.trim() || null
-      })
-      .single();
-
-    if (supaError) {
-      console.error('Error creating trip', supaError);
-      setFormError(serviceErrorMessage(supaError));
+    try {
+      const data = await requestCustomerTrip({
+        customerId,
+        ownerId: selectedDriver.owner_id,
+        passengerName,
+        pickup,
+        destination,
+        phone,
+        preferredTime,
+      });
+      setConfirmation('Tu solicitud fue enviada. Espera la confirmación del conductor.');
+      setLastRequest({
+        tripId: data.trip_id,
+        driverName: selectedDriver.username ?? 'Conductor',
+        pickup,
+        destination,
+        preferredTime: preferredTime || 'N/D',
+        createdAt: data.created_at,
+        status: 'pending',
+        customerId,
+        ownerId: selectedDriver.owner_id,
+      });
+      setSelectedDriver(null);
+      setForm(initialFormState);
+    } catch (error) {
+      console.error('Error creating trip', error);
+      setFormError(serviceErrorMessage(error instanceof Error ? error : null));
+    } finally {
       setSubmitting(false);
-      return;
     }
-
-    const data = rawData as RequestedTripRow;
-
-    setConfirmation('Tu solicitud fue enviada. Espera la confirmación del conductor.');
-    setLastRequest({
-      tripId: data.trip_id,
-      driverName: selectedDriver.username ?? 'Conductor',
-      pickup,
-      destination,
-      preferredTime: preferredTime || 'N/D',
-      createdAt: data?.created_at ?? new Date().toISOString(),
-      status: 'pending',
-      customerId: customerId || '',
-      ownerId: selectedDriver.owner_id
-    });
-    setSubmitting(false);
-    setSelectedDriver(null);
-    setForm(initialFormState);
   };
 
   return (
@@ -368,7 +293,10 @@ const CostumerView = () => {
 
           {!loading && listError && (
             <div className="bg-red-50 dark:bg-red-900/30 text-red-700 dark:text-red-200 border border-red-200 dark:border-red-800 rounded-xl p-4 sm:p-6 text-center text-sm sm:text-base">
-              {listError}
+              <p>{listError}</p>
+              <button type="button" onClick={() => { void loadDrivers(); }} className="mt-4 rounded-xl bg-red-700 px-4 py-2 font-bold text-white hover:bg-red-800">
+                Reintentar
+              </button>
             </div>
           )}
 
@@ -463,20 +391,7 @@ const CostumerView = () => {
               </button>
             </div>
 
-            {/* <NewTripForm
-              handleSubmitRequest={handleSubmitRequest}
-              handleChange={handleChange}
-              passengerName={form.passengerName}
-              pickup={form.pickup || ''}
-              destination={form.destination || ''}
-              phone={form.phone || ''}
-              preferredTime={form.preferredTime || ''}
-              formError={formError}
-              setSelectedDriver={setSelectedDriver}
-              submitting={submitting}
-            /> */}
-
-            <NewTripFormV2
+            <NewTripForm
               handleSubmitRequest={handleSubmitRequest}
               handleChange={handleChange}
               passengerName={form.passengerName}
@@ -497,4 +412,4 @@ const CostumerView = () => {
   );
 };
 
-export default CostumerView;
+export default CustomerView;

@@ -3,32 +3,35 @@ import { useEffect, useState } from 'react';
 import ExpenseTracker from './ExpenseTracker';
 import EarningsReport from './EarningsReport';
 import ProfileCard from './ProfileCard';
-import { clientSupaBase } from '../supabase/client';
 import { Expense, Profile, Trip, UserSettings, ProfileEditableField } from '../types';
 import ProfileDashboard from './ProfileDashboard';
+import { useAuth } from '../features/auth/useAuth';
+import { getDriverProfile, updateDriverProfile } from '../features/profile/profile.service';
+import { useToast } from '../shared/ui/useToast';
 
 type ActiveTab = 'settings' | 'earnings' | 'profile';
 type EditableProfileField = ProfileEditableField;
 
 interface ProfileViewProps {
   settings: UserSettings;
-  onUpdateSettings: (settings: UserSettings) => void;
+  onUpdateSettings: (settings: UserSettings) => Promise<void>;
   expenses: Expense[];
-  onAddExpense: (expense: Omit<Expense, 'id' | 'date' | 'owner_id'>) => void;
+  onAddExpense: (expense: Omit<Expense, 'id' | 'date' | 'owner_id'>) => Promise<void>;
   trips: Trip[];
 }
 
 export default function ProfileView({ settings, onUpdateSettings, expenses, onAddExpense, trips }: ProfileViewProps) {
+  const { user } = useAuth();
+  const { notify } = useToast();
   const [activeTab, setActiveTab] = useState<ActiveTab>('settings');
   const [editMode, setEditMode] = useState(false);
   const [tempSettings, setTempSettings] = useState(settings);
-  const [userEmail, setUserEmail] = useState<string | null>(null);
-  const [userId, setUserId] = useState<string | null>(null);
   const [userProfile, setUserProfile] = useState<Profile | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalField, setModalField] = useState<EditableProfileField | null>(null);
   const [modalValue, setModalValue] = useState('');
   const [isSavingField, setIsSavingField] = useState(false);
+  const [isSavingSettings, setIsSavingSettings] = useState(false);
 
   const fieldMeta: Record<EditableProfileField, { title: string; placeholder: string; helper?: string }> = {
     carModel: {
@@ -56,38 +59,24 @@ export default function ProfileView({ settings, onUpdateSettings, expenses, onAd
   }, [settings]);
 
   useEffect(() => {
-    async function fetchSession() {
-      const { data } = await clientSupaBase.auth.getUser();
-      setUserEmail(data.user?.email ?? null);
-      setUserId(data.user?.id ?? null);
+    if (!user) return;
+    let active = true;
+    void getDriverProfile(user.id)
+      .then((profile) => { if (active) setUserProfile(profile); })
+      .catch(() => { if (active) notify('No pudimos cargar tu perfil.', 'error'); });
+    return () => { active = false; };
+  }, [notify, user]);
+
+  const handleSaveSettings = async () => {
+    setIsSavingSettings(true);
+    try {
+      await onUpdateSettings(tempSettings);
+      setEditMode(false);
+    } catch {
+      // App muestra el error mediante el sistema global de notificaciones.
+    } finally {
+      setIsSavingSettings(false);
     }
-    fetchSession();
-  }, []);
-
-  useEffect(() => {
-    async function fetchUserProfile(ownerId: string) {
-      const { data, error } = await clientSupaBase
-        .from('UsersProfile')
-        .select('*')
-        .eq('owner_id', ownerId)
-        .maybeSingle();
-
-      if (error && error.code !== 'PGRST116') {
-        console.error('Error fetching user profile:', error);
-        return;
-      }
-
-      setUserProfile(data);
-    }
-
-    if (userId) {
-      fetchUserProfile(userId);
-    }
-  }, [userId]);
-
-  const handleSaveSettings = () => {
-    onUpdateSettings(tempSettings);
-    setEditMode(false);
   };
 
   const handleCancelSettings = () => {
@@ -117,7 +106,7 @@ export default function ProfileView({ settings, onUpdateSettings, expenses, onAd
   };
 
   const handleModalSubmit = async () => {
-    if (!userId || !modalField) return;
+    if (!user || !modalField) return;
     setIsSavingField(true);
 
     let updatedValue: string | boolean | null;
@@ -130,23 +119,17 @@ export default function ProfileView({ settings, onUpdateSettings, expenses, onAd
       updatedValue = modalValue.trim() || null;
     }
 
-    const { data, error } = await clientSupaBase
-      .from('UsersProfile')
-      .update({ [modalField]: updatedValue })
-      .eq('owner_id', userId)
-      .select()
-      .maybeSingle();
-
-    setIsSavingField(false);
-
-    if (error) {
-      console.error('Error updating profile field:', error);
-      return;
-    }
-
-    if (data) {
-      setUserProfile(data as Profile);
-      handleModalClose();
+    try {
+      const profile = await updateDriverProfile(user.id, modalField, updatedValue);
+      setUserProfile(profile);
+      setIsModalOpen(false);
+      setModalField(null);
+      setModalValue('');
+      notify('Perfil actualizado.', 'success');
+    } catch {
+      notify('No pudimos actualizar el perfil.', 'error');
+    } finally {
+      setIsSavingField(false);
     }
   };
 
@@ -162,7 +145,7 @@ export default function ProfileView({ settings, onUpdateSettings, expenses, onAd
           </span>
           <h1 className="truncate text-3xl font-black tracking-tight text-slate-950 dark:text-white sm:text-5xl">Tu operación, bajo control</h1>
           <p className="mt-2 max-w-2xl text-sm leading-relaxed text-slate-600 dark:text-slate-300 sm:text-base">Configura tus costos, consulta ganancias y mantén al día los datos que verán tus pasajeros.</p>
-          {userEmail && <p className="mt-4 text-xs font-semibold text-emerald-800 dark:text-emerald-200">{userEmail}</p>}
+          {user?.email && <p className="mt-4 text-xs font-semibold text-emerald-800 dark:text-emerald-200">{user.email}</p>}
         </div>
       </section>
 
@@ -323,9 +306,10 @@ export default function ProfileView({ settings, onUpdateSettings, expenses, onAd
                     </button>
                     <button
                       onClick={handleSaveSettings}
+                      disabled={isSavingSettings}
                       className="flex-1 px-4 sm:px-5 py-2.5 sm:py-3 bg-emerald-600 text-white font-medium rounded-lg hover:bg-emerald-700 transition-all duration-200 shadow-md hover:shadow-lg text-sm sm:text-base min-h-[44px]"
                     >
-                      Guardar Cambios
+                      {isSavingSettings ? 'Guardando...' : 'Guardar Cambios'}
                     </button>
                   </>
                 ) : (

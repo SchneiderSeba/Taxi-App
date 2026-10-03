@@ -1,17 +1,17 @@
 import { type FC, type ElementType, useState } from 'react';
 import { MapPin, DollarSign, CheckCircle, Clock, XCircle, ArrowRightToLine } from 'lucide-react';
 import { Trip } from '../types';
-import { clientSupaBase } from '../supabase/client';
 
 interface TripCardProps {
   trip: Trip;
-  onUpdateStatus: (id: number, done: Trip['done']) => void;
+  onUpdateStatus: (id: number, done: Trip['done'], price?: number) => Promise<void>;
 }
 
 const TripCard: FC<TripCardProps> = ({ trip, onUpdateStatus }) => {
   const [showPriceModal, setShowPriceModal] = useState(false);
   const [priceInput, setPriceInput] = useState(trip.price?.toString() || '');
   const [updating, setUpdating] = useState(false);
+  const [updateError, setUpdateError] = useState<string | null>(null);
 
   const statusConfig: Record<Trip['done'], {
     icon: ElementType;
@@ -51,46 +51,34 @@ const TripCard: FC<TripCardProps> = ({ trip, onUpdateStatus }) => {
     : 'Sin tarifa registrada';
 
   const updateStatus = async (id: number, done: Trip['done']) => {
+    setUpdating(true);
+    setUpdateError(null);
     try {
-      const { error } = await clientSupaBase.from('Trips').update({ done }).eq('id', id);
-      if (error) {
-        console.error('Error updating trip status:', error);
-      } else {
-        onUpdateStatus(id, done);
-      }
-    } catch (error) {
-      console.error('Error updating trip status:', error);
+      await onUpdateStatus(id, done);
+    } catch {
+      setUpdateError('No pudimos actualizar el viaje. Intenta nuevamente.');
+    } finally {
+      setUpdating(false);
     }
   };
 
   const handleAcceptWithPrice = async () => {
-    if (!priceInput || isNaN(parseFloat(priceInput))) {
-      alert('Por favor ingresa un precio válido');
+    const price = Number(priceInput);
+    if (!Number.isFinite(price) || price <= 0) {
+      setUpdateError('Ingresa un precio mayor que cero.');
       return;
     }
 
     setUpdating(true);
+    setUpdateError(null);
     try {
-      const { error } = await clientSupaBase
-        .from('Trips')
-        .update({ 
-          done: 'completed',
-          price: parseFloat(priceInput)
-        })
-        .eq('id', trip.id);
-
-      if (error) {
-        console.error('Error updating trip:', error);
-        alert('Error al actualizar el viaje');
-      } else {
-        onUpdateStatus(trip.id, 'completed');
-        setShowPriceModal(false);
-      }
-    } catch (error) {
-      console.error('Error updating trip:', error);
-      alert('Error al actualizar el viaje');
+      await onUpdateStatus(trip.id, 'completed', price);
+      setShowPriceModal(false);
+    } catch {
+      setUpdateError('No pudimos aprobar el viaje. Intenta nuevamente.');
+    } finally {
+      setUpdating(false);
     }
-    setUpdating(false);
   };
 
   const handleApproveClick = () => {
@@ -146,6 +134,7 @@ const TripCard: FC<TripCardProps> = ({ trip, onUpdateStatus }) => {
               </button>
               <button
                 onClick={() => updateStatus(trip.id, 'cancelled')}
+                disabled={updating}
                 className="flex items-center gap-2 bg-red-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-red-700 dark:bg-red-800 dark:hover:bg-red-900 transition-all duration-200"
               >
                 <XCircle className="w-4 h-4" />
@@ -189,6 +178,7 @@ const TripCard: FC<TripCardProps> = ({ trip, onUpdateStatus }) => {
                   autoFocus
                 />
               </div>
+              {updateError && <p className="mt-2 text-sm font-medium text-red-600">{updateError}</p>}
             </div>
 
             <div className="flex gap-3">

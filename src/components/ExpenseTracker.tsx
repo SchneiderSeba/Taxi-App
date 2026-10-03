@@ -4,19 +4,25 @@ import { Expense } from '../types';
 
 interface ExpenseTrackerProps {
   expenses: Expense[];
-  onAddExpense: (expense: Omit<Expense, 'id' | 'date' | 'owner_id'>) => void;
+  onAddExpense: (expense: Omit<Expense, 'id' | 'date' | 'owner_id'>) => Promise<void>;
   gasUnitCost: number;
 }
 
 export default function ExpenseTracker({ expenses, onAddExpense, gasUnitCost }: ExpenseTrackerProps) {
   const [showAddGas, setShowAddGas] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
 
-  const handleAddGas = () => {
-    onAddExpense({
-      type: 'gas',
-      amount: gasUnitCost
-    });
-    setShowAddGas(false);
+  const handleAddGas = async () => {
+    setIsSaving(true);
+    try {
+      await onAddExpense({
+        type: 'gas',
+        amount: gasUnitCost
+      });
+      setShowAddGas(false);
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   const today = new Date().toISOString().split('T')[0];
@@ -57,8 +63,8 @@ export default function ExpenseTracker({ expenses, onAddExpense, gasUnitCost }: 
       {todayExpenses.length > 0 && (
         <div className="space-y-2">
           <h3 className="text-sm font-semibold text-gray-700">Cargas de Hoy</h3>
-          {todayExpenses.map(expense => (
-            <div key={expense.id ?? expense.owner_id ?? Math.random()} className="bg-white rounded-lg border border-gray-200 p-4 flex items-center justify-between">
+          {todayExpenses.map((expense, index) => (
+            <div key={expense.id ?? `${expense.owner_id}-${expense.date}-${index}`} className="bg-white rounded-lg border border-gray-200 p-4 flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <div className="w-8 h-8 bg-orange-100 rounded-lg flex items-center justify-center">
                   <Fuel className="w-4 h-4 text-orange-600" />
@@ -95,9 +101,10 @@ export default function ExpenseTracker({ expenses, onAddExpense, gasUnitCost }: 
                 </button>
                 <button
                   onClick={handleAddGas}
+                  disabled={isSaving}
                   className="flex-1 px-5 py-3 bg-emerald-600 text-white font-medium rounded-lg hover:bg-emerald-700 transition-all duration-200 shadow-md hover:shadow-lg"
                 >
-                  Registrar
+                  {isSaving ? 'Registrando...' : 'Registrar'}
                 </button>
               </div>
             </div>

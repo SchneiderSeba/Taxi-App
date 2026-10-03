@@ -18,7 +18,7 @@
   <a href="https://taxi-app-production.up.railway.app/" target="_blank">
     <img src="https://img.shields.io/badge/🚗_Demo_Conductor-Ver_App-10B981?style=for-the-badge" alt="Demo Conductor"/>
   </a>
-  <a href="https://taxi-app-production.up.railway.app/costumer" target="_blank">
+  <a href="https://taxi-app-production.up.railway.app/customer" target="_blank">
     <img src="https://img.shields.io/badge/👤_Demo_Cliente-Ver_App-3B82F6?style=for-the-badge" alt="Demo Cliente"/>
   </a>
 </p>
@@ -153,7 +153,7 @@ src/
 │   ├── TripCard.tsx            # Card individual de viaje
 │   ├── ProfileView.tsx         # Gestión de perfil y configuración
 │   ├── ProfileCard.tsx         # Visualización de datos del conductor
-│   ├── CostumerView.tsx        # Interfaz pública para clientes
+│   ├── CustomerView.tsx        # Interfaz pública para clientes
 │   ├── AddTripModal.tsx        # Modal para agregar viajes
 │   ├── EarningsReport.tsx      # Reporte de ganancias
 │   └── ExpenseTracker.tsx      # Seguimiento de gastos

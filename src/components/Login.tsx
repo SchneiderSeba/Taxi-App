@@ -1,29 +1,15 @@
 import { Chrome } from 'lucide-react';
-import { useState, useEffect } from 'react';
-import { clientSupaBase } from '../supabase/client';
-import { useNavigate } from 'react-router-dom';
+import { useState } from 'react';
 import BackGround from './UI/BackGround';
 import { serviceErrorMessage } from '../lib/serviceError';
+import { sendMagicLink, signInWithGoogle } from '../features/auth/auth.service';
 
 
 export default function Login() {
   const [registerEmail, setRegisterEmail] = useState('');
   const [registerError, setRegisterError] = useState('');
   const [registerSuccess, setRegisterSuccess] = useState('');
-  const navigate = useNavigate();
-
-  // Procesar magic link: si hay access_token y refresh_token en la URL, establecer sesión
-  useEffect(() => {
-    const params = new URLSearchParams(window.location.hash.replace('#', '?'));
-    const access_token = params.get('access_token');
-    const refresh_token = params.get('refresh_token');
-    if (access_token && refresh_token) {
-      clientSupaBase.auth.setSession({ access_token, refresh_token })
-        .then(() => {
-          navigate('/trips', { replace: true });
-        });
-    }
-  }, [navigate]);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -33,44 +19,26 @@ export default function Login() {
       setRegisterError('Completa todos los campos.');
       return;
     }
+    setIsSubmitting(true);
     try {
-      const { error } = await clientSupaBase.auth.signInWithOtp({
-        email: registerEmail,
-        options: {
-          //Para Produccion
-          emailRedirectTo: 'https://taxi-app-production.up.railway.app/login'
-          //Para Desarrollo
-          // emailRedirectTo: 'http://localhost:5173/login'
-        },
-      });
-      if (error) {
-        setRegisterError(error.message);
-      } else {
-        setRegisterSuccess('Revisa tu correo para continuar el registro.');
-        setRegisterEmail('');
-      }
-    } catch {
-      setRegisterError('Error al registrar. Intenta nuevamente.');
+      await sendMagicLink(registerEmail);
+      setRegisterSuccess('Revisa tu correo para continuar el registro.');
+      setRegisterEmail('');
+    } catch (error) {
+      setRegisterError(serviceErrorMessage(error instanceof Error ? error : null));
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
   const handleRegisterByGoogle = async () => {
     setRegisterError('');
+    setIsSubmitting(true);
     try {
-      const { error } = await clientSupaBase.auth.signInWithOAuth({
-        provider: 'google',
-        options: {
-          //Para Produccion
-          redirectTo: 'https://taxi-app-production.up.railway.app/login'
-          //Para Desarrollo
-          // redirectTo: 'http://localhost:5174/login'
-          // redirectTo: 'https://4gb02f93-5174.brs.devtunnels.ms/login'
-        }
-      });
-      if (error) setRegisterError(serviceErrorMessage(error, error.message));
+      await signInWithGoogle();
     } catch (error) {
-      console.error('Error al iniciar sesión con Google:', error);
       setRegisterError(serviceErrorMessage(error instanceof Error ? error : null));
+      setIsSubmitting(false);
     }
   };
 
@@ -105,6 +73,7 @@ export default function Login() {
 
             <button
               onClick={handleRegisterByGoogle}
+              disabled={isSubmitting}
               className="w-full flex items-center justify-center gap-2 sm:gap-3 bg-white/25 dark:bg-gray-800 border-2 border-gray-300 dark:border-gray-700 rounded-lg px-4 sm:px-6 py-3 sm:py-3.5 text-gray-700 dark:text-gray-200 font-medium hover:bg-white/45 dark:hover:bg-gray-700 hover:border-gray-400 dark:hover:border-gray-500 transition-all duration-200 hover:shadow-md text-sm sm:text-base min-h-[48px]"
             >
               <Chrome className="w-4 h-4 sm:w-5 sm:h-5 shrink-0" />
@@ -138,9 +107,10 @@ export default function Login() {
               {registerSuccess && <p className="text-emerald-600 text-xs sm:text-sm">{registerSuccess}</p>}
               <button
                 type="submit"
+                disabled={isSubmitting}
                 className="w-full bg-emerald-600 hover:bg-emerald-700 dark:bg-emerald-800 dark:hover:bg-emerald-900 text-white font-semibold rounded-lg py-2.5 sm:py-3 transition-colors text-sm sm:text-base min-h-[48px]"
               >
-                Registrarse
+                {isSubmitting ? 'Procesando...' : 'Registrarse'}
               </button>
             </form>
 

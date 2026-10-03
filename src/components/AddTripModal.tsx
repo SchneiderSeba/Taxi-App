@@ -4,24 +4,34 @@ import { Trip } from '../types';
 
 interface AddTripModalProps {
   onClose: () => void;
-  onAdd: (trip: Omit<Trip, 'id' | 'owner_id' | 'created_at'>) => void;
+  onAdd: (trip: Omit<Trip, 'id' | 'owner_id' | 'created_at'>) => Promise<void>;
 }
 
 export default function AddTripModal({ onClose, onAdd }: AddTripModalProps) {
   const [name, setName] = useState('');
   const [address, setAddress] = useState('');
   const [price, setPrice] = useState('');
+  const [isSaving, setIsSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!name || !address || !price) return;
-    onAdd({
-      name,
-      address,
-      price: parseFloat(price),
-      done: 'pending'
-    });
-    onClose();
+    setIsSaving(true);
+    setError(null);
+    try {
+      await onAdd({
+        name,
+        address,
+        price: parseFloat(price),
+        done: 'pending'
+      });
+      onClose();
+    } catch {
+      setError('No pudimos guardar el viaje. Revisa los datos e intenta nuevamente.');
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   return (
@@ -88,7 +98,8 @@ export default function AddTripModal({ onClose, onAdd }: AddTripModalProps) {
             </div>
           </div>
 
-          <div className="flex gap-3 pt-4">
+          <div className="flex flex-wrap gap-3 pt-4">
+            {error && <p className="basis-full text-sm font-medium text-red-600">{error}</p>}
             <button
               type="button"
               onClick={onClose}
@@ -98,9 +109,10 @@ export default function AddTripModal({ onClose, onAdd }: AddTripModalProps) {
             </button>
             <button
               type="submit"
+              disabled={isSaving}
               className="flex-1 px-5 py-3 bg-emerald-600 text-white font-medium rounded-lg hover:bg-emerald-700 transition-all duration-200 shadow-md hover:shadow-lg"
             >
-              Agregar
+              {isSaving ? 'Guardando...' : 'Agregar'}
             </button>
           </div>
         </form>

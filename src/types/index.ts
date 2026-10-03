@@ -12,6 +12,8 @@ export interface Trip {
   customer_id?: string;
   pickup?: string;
   destination?: string;
+  passenger_phone?: string;
+  preferred_time?: string;
 }
 
 export interface Expense {

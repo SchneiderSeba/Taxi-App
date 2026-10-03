@@ -1,27 +1,19 @@
 import { useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "react-router-dom";
-import { clientSupaBase } from "../supabase/client";
-
-type PaymentRecord = {
-  amount?: number;
-  status?: string;
-  mp_payment_id?: string;
-} & Record<string, unknown>;
+import { getPaymentResult, type PaymentResult } from "../features/payments/payment.service";
 
 export const Payment = () => {
   const [searchParams] = useSearchParams();
   const [status, setStatus] = useState<string | null>(null);
   const [paymentId, setPaymentId] = useState<string | null>(null);
-  const [dbPayment, setDbPayment] = useState<PaymentRecord | null>(null);
+  const [dbPayment, setDbPayment] = useState<PaymentResult | null>(null);
+  const [paymentError, setPaymentError] = useState<string | null>(null);
 
   useEffect(() => {
     if (paymentId) {
-      clientSupaBase
-        .rpc("get_payment_result", { p_payment_id: paymentId })
-        .maybeSingle()
-        .then(({ data }) => {
-          setDbPayment(data as PaymentRecord | null);
-        });
+      void getPaymentResult(paymentId)
+        .then(setDbPayment)
+        .catch(() => setPaymentError('No pudimos consultar el detalle del pago.'));
     }
   }, [paymentId]);
 
@@ -76,6 +68,12 @@ export const Payment = () => {
 
           {!status && (
             <div className="text-sm text-gray-600 dark:text-gray-300">Procesando pago...</div>
+          )}
+
+          {paymentError && (
+            <div role="alert" className="rounded-xl border border-red-200 bg-red-50 p-4 text-sm font-medium text-red-700">
+              {paymentError}
+            </div>
           )}
 
           {status && (

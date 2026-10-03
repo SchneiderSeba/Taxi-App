@@ -6,8 +6,8 @@ import { useState } from 'react';
 
 interface TripsViewProps {
   trips: Trip[];
-  onAddTrip: (trip: Omit<Trip, 'id' | 'owner_id' | 'created_at'>) => void;
-  onUpdateTripStatus: (id: number, status: Trip['done']) => void;
+  onAddTrip: (trip: Omit<Trip, 'id' | 'owner_id' | 'created_at'>) => Promise<void>;
+  onUpdateTripStatus: (id: number, status: Trip['done'], price?: number) => Promise<void>;
   dailyExpenses: number;
 }
 

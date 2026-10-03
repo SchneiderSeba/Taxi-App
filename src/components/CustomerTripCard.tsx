@@ -1,6 +1,6 @@
 import { CheckCircle, Clock, DollarSign } from 'lucide-react';
-import { RequestStatusCard } from './CostumerView';
-import { MercadoPagoBtn } from '../supabase/functions';
+import type { RequestStatusCard } from './CustomerView';
+import { MercadoPagoButton } from '../features/payments/components/MercadoPagoButton';
 import GoogleMainMap from './Maps/GoogleMainMap';
 interface CustomerTripCardProps {
   lastRequest: RequestStatusCard;
@@ -43,7 +43,7 @@ export default function CustomerTripCard({ lastRequest }: CustomerTripCardProps)
                         {lastRequest.price?.toFixed(2)}
                         </span>
                         <>
-                            <MercadoPagoBtn 
+                            <MercadoPagoButton
                               tripId={lastRequest.tripId}
                               clientId={lastRequest.customerId}
                             />
