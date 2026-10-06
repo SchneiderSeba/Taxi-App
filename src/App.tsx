@@ -98,7 +98,7 @@ function App() {
     <ProtectedRoute>
       <Layout
         currentView={currentView}
-        onNavigate={(view) => navigate(view === 'trips' ? '/trips' : '/profile')}
+        onNavigate={(view) => navigate(view === 'trips' ? '/driver/trips' : '/driver/profile')}
         onLogout={handleLogout}
         userName={userName}
       >
@@ -121,12 +121,13 @@ function App() {
     <Suspense fallback={<FullPageLoader />}>
       <Routes>
         <Route path="/customer" element={<CustomerView />} />
-        <Route path="/customer/login" element={isAuthenticated ? <Navigate to={accountType === 'driver' ? '/trips' : '/customer'} replace /> : <CustomerLogin />} />
+        <Route path="/customer/login" element={isAuthenticated ? <Navigate to={accountType === 'driver' ? '/driver/trips' : '/customer'} replace /> : <CustomerLogin />} />
         <Route path="/customer/profile" element={<CustomerProtectedRoute><CustomerProfile /></CustomerProtectedRoute>} />
-        <Route path="/login" element={isAuthenticated ? <Navigate to={accountType === 'driver' ? '/trips' : '/customer'} replace /> : <Login />} />
-        <Route path="/" element={<Navigate to={isAuthenticated ? (accountType === 'driver' ? '/trips' : '/customer') : '/customer'} replace />} />
+        <Route path="/login" element={isAuthenticated ? <Navigate to={accountType === 'driver' ? '/driver/trips' : '/customer'} replace /> : <Login />} />
+        <Route path="/" element={<Navigate to={isAuthenticated ? (accountType === 'driver' ? '/driver/trips' : '/customer') : '/customer'} replace />} />
+        <Route path="/driver" element={<Navigate to="/driver/trips" replace />} />
         <Route
-          path="/trips"
+          path="/driver/trips"
           element={driverLayout('trips', (
             <TripsView
               trips={trips}
@@ -137,7 +138,7 @@ function App() {
           ))}
         />
         <Route
-          path="/profile"
+          path="/driver/profile"
           element={driverLayout('profile', (
             <ProfileView
               settings={settings}
@@ -148,6 +149,8 @@ function App() {
             />
           ))}
         />
+        <Route path="/trips" element={<Navigate to="/driver/trips" replace />} />
+        <Route path="/profile" element={<Navigate to="/driver/profile" replace />} />
         <Route path="/payment" element={<Payment />} />
         <Route path="*" element={<NotFoundPage />} />
       </Routes>

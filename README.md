@@ -15,7 +15,7 @@
 </p>
 
 <p align="center">
-  <a href="https://taxi-app-production.up.railway.app/" target="_blank">
+  <a href="https://taxi-app-production.up.railway.app/driver" target="_blank">
     <img src="https://img.shields.io/badge/🚗_Demo_Conductor-Ver_App-10B981?style=for-the-badge" alt="Demo Conductor"/>
   </a>
   <a href="https://taxi-app-production.up.railway.app/customer" target="_blank">
@@ -62,13 +62,16 @@
 </td>
 <td width="50%" valign="top">
 
-### 👥 Para Clientes (Sin Registro)
+### 👥 Para Clientes
 
 - 🔍 **Exploración de conductores**  
   Lista completa con información detallada
   
 - 🚗 **Solicitud sin registro**  
   Sistema anónimo con ID único
+
+- 🔐 **Cuenta de pasajero opcional**
+  Login persistente y perfil sincronizado
   
 - 📍 **Seguimiento en tiempo real**  
   Estado: pendiente/aceptado/cancelado
@@ -149,6 +152,8 @@ src/
 ├── components/
 │   ├── Layout.tsx              # Header con navegación y dark mode
 │   ├── Login.tsx               # Autenticación con Google OAuth
+│   ├── CustomerLogin.tsx       # Registro e inicio de sesión del pasajero
+│   ├── CustomerProfile.tsx     # Configuración del perfil del pasajero
 │   ├── TripsView.tsx           # Dashboard de viajes del conductor
 │   ├── TripCard.tsx            # Card individual de viaje
 │   ├── ProfileView.tsx         # Gestión de perfil y configuración
@@ -157,8 +162,14 @@ src/
 │   ├── AddTripModal.tsx        # Modal para agregar viajes
 │   ├── EarningsReport.tsx      # Reporte de ganancias
 │   └── ExpenseTracker.tsx      # Seguimiento de gastos
+├── features/
+│   ├── auth/                   # Sesiones, roles y rutas protegidas
+│   ├── customer/               # Persistencia del perfil del pasajero
+│   ├── profile/                # Perfil y finanzas del conductor
+│   └── trips/                  # Estado y operaciones de viajes
 ├── supabase/
-│   └── client.js               # Configuración de Supabase
+│   ├── client.ts               # Configuración de Supabase
+│   └── database.types.ts       # Tipos generados de PostgreSQL
 ├── types/
 │   └── index.ts                # Definiciones de tipos TypeScript
 └── main.tsx                    # Punto de entrada de la app
@@ -174,6 +185,7 @@ Taxi App utiliza **Supabase Auth** con las siguientes opciones:
 
 - **Google OAuth** - Inicio de sesión con cuenta de Google (principal)
 - **Magic Link (email)** - Link de acceso directo sin contraseña
+- **Email y contraseña** - Acceso para cuentas de conductor registradas
 
 Cada conductor tiene un perfil único con:
 - Nombre completo (obtenido de Google)
@@ -182,9 +194,10 @@ Cada conductor tiene un perfil único con:
 - Estado de disponibilidad (disponible/no disponible)
 
 ### Para Clientes
-- **Sin registro necesario** - Sistema anónimo con customer ID único
-- **Persistencia local** - ID almacenado en localStorage del navegador
-- **Compatibilidad con privacidad** - Fallback para navegadores con restricciones (ej: Brave)
+- **Registro opcional** - Email y contraseña con sesión persistente
+- **Perfil sincronizado** - Nombre y teléfono disponibles entre dispositivos
+- **Modo invitado** - Sistema anónimo con customer ID almacenado en localStorage
+- **Compatibilidad con privacidad** - Entrada manual si Google Places está bloqueado
 
 ### Seguridad de Datos
 - **Row Level Security (RLS)** - Cada conductor solo ve su información
@@ -221,6 +234,25 @@ Cada conductor tiene un perfil único con:
 
 ---
 
+## 🧭 Rutas de la aplicación
+
+| Ruta | Acceso | Descripción |
+|:-----|:-------|:------------|
+| `/` | Pública | Redirige al área correspondiente según la sesión |
+| `/customer` | Pública | Explorar conductores y solicitar viajes |
+| `/customer/login` | Pública | Registro e inicio de sesión de pasajeros |
+| `/customer/profile` | Pasajero autenticado | Configuración de datos personales |
+| `/login` | Pública | Inicio de sesión de conductores |
+| `/driver` | Conductor autenticado | Entrada al panel; redirige a `/driver/trips` |
+| `/driver/trips` | Conductor autenticado | Gestión de solicitudes y viajes |
+| `/driver/profile` | Conductor autenticado | Perfil, vehículo, gastos y configuración |
+| `/payment` | Pública | Resultado del pago de un viaje |
+
+Las rutas anteriores `/trips` y `/profile` se conservan como redirecciones hacia
+`/driver/trips` y `/driver/profile` para mantener compatibilidad con enlaces existentes.
+
+---
+
 <div align="center">
 
 ## 🚧 Estado del Proyecto
@@ -252,14 +284,15 @@ Sistema completo de conductores y clientes, autenticación OAuth, actualizacione
 
 ```mermaid
 graph TD
-    A[Inicia sesión con Google] --> B[Configura perfil y vehículo]
-    B --> C[Establece disponibilidad]
-    C --> D[Recibe solicitudes en tiempo real]
-    D --> E{Acepta viaje?}
-    E -->|Sí| F[Establece precio]
-    E -->|No| G[Rechaza solicitud]
-    F --> H[Registra gastos]
-    H --> I[Visualiza ganancias netas]
+    A[Inicia sesión] --> B[Entra a /driver]
+    B --> C[Configura perfil y vehículo]
+    C --> D[Establece disponibilidad]
+    D --> E[Recibe solicitudes en tiempo real]
+    E --> F{Acepta viaje?}
+    F -->|Sí| G[Establece precio]
+    F -->|No| H[Rechaza solicitud]
+    G --> I[Registra gastos]
+    I --> J[Visualiza ganancias netas]
 ```
 
 </td>
@@ -285,7 +318,7 @@ graph TD
 
 1. Clonar el repositorio:
 ```
-git clone https://github.com/usuario/taxi-app.git
+git clone https://github.com/SchneiderSeba/Taxi-App.git
 
 cd taxi-app
 ```

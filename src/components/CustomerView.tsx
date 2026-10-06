@@ -247,7 +247,7 @@ const CustomerView = () => {
         <div className="flex justify-end gap-2 px-3 sm:px-6 pt-4 sm:pt-6">
           {isAuthenticated ? (
             <Link
-              to={accountType === 'driver' ? '/trips' : '/customer/profile'}
+              to={accountType === 'driver' ? '/driver' : '/customer/profile'}
               className="inline-flex min-h-[40px] items-center gap-2 rounded-full border border-white/60 bg-white/60 px-4 py-2 text-xs font-bold text-slate-800 shadow-sm backdrop-blur hover:bg-white/80 sm:text-sm"
             >
               <UserCircle className="h-4 w-4" /> {accountType === 'driver' ? 'Panel conductor' : 'Mi perfil'}

@@ -19,6 +19,6 @@ export function CustomerProtectedRoute({ children }: { children: ReactNode }) {
 
   if (isInitializing) return <FullPageLoader label="Restaurando tu sesión…" />;
   if (!isAuthenticated) return <Navigate to="/customer/login" replace state={{ from: location.pathname }} />;
-  if (accountType !== 'customer') return <Navigate to="/trips" replace />;
+  if (accountType !== 'customer') return <Navigate to="/driver/trips" replace />;
   return children;
 }
