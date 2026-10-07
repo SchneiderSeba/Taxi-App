@@ -65,33 +65,63 @@ export type Database = {
       };
       payments: {
         Row: {
+          amount: number | null;
           client_id: string | null;
           created_at: string;
+          customer_id: string | null;
           id: number;
           mp_payment_id: string;
           owner_id: string | null;
           raw_query: Json | null;
+          status: string | null;
           topic: string | null;
+          trip_id: number | null;
+          updated_at: string;
         };
         Insert: {
+          amount?: number | null;
           client_id?: string | null;
           created_at?: string;
+          customer_id?: string | null;
           id?: number;
           mp_payment_id: string;
           owner_id?: string | null;
           raw_query?: Json | null;
+          status?: string | null;
           topic?: string | null;
+          trip_id?: number | null;
+          updated_at?: string;
         };
         Update: {
+          amount?: number | null;
           client_id?: string | null;
           created_at?: string;
+          customer_id?: string | null;
           id?: number;
           mp_payment_id?: string;
           owner_id?: string | null;
           raw_query?: Json | null;
+          status?: string | null;
           topic?: string | null;
+          trip_id?: number | null;
+          updated_at?: string;
         };
-        Relationships: [];
+        Relationships: [
+          {
+            foreignKeyName: 'payments_owner_id_fkey';
+            columns: ['owner_id'];
+            isOneToOne: false;
+            referencedRelation: 'UsersProfile';
+            referencedColumns: ['owner_id'];
+          },
+          {
+            foreignKeyName: 'payments_trip_id_fkey';
+            columns: ['trip_id'];
+            isOneToOne: false;
+            referencedRelation: 'Trips';
+            referencedColumns: ['id'];
+          },
+        ];
       };
       Trips: {
         Row: {

@@ -200,9 +200,26 @@ Cada conductor tiene un perfil único con:
 - **Compatibilidad con privacidad** - Entrada manual si Google Places está bloqueado
 
 ### Seguridad de Datos
-- **Row Level Security (RLS)** - Cada conductor solo ve su información
-- **Políticas de acceso** - Protección a nivel de base de datos
+- **Row Level Security (RLS)** - Activo en todas las tablas públicas
+- **Políticas por propietario** - Conductores y pasajeros solamente acceden a sus propias filas
+- **Acceso anónimo por RPC** - `anon` no dispone de grants directos sobre tablas
+- **Grants mínimos** - `authenticated` recibe únicamente las operaciones usadas por el frontend
+- **Defaults seguros** - Las tablas, secuencias y funciones nuevas no se exponen automáticamente
 - **Realtime con filtros** - Actualizaciones solo de datos autorizados
+
+#### Matriz de acceso de la Data API
+
+| Recurso | `anon` | `authenticated` |
+|:--------|:-------|:----------------|
+| Tablas públicas | Sin acceso directo | Acceso mínimo, sujeto a RLS por propietario |
+| Conductores disponibles | RPC `list_available_drivers` | RPC `list_available_drivers` |
+| Solicitar/consultar viaje | RPC limitadas | RPC limitadas y vinculadas a `auth.uid()` |
+| Pagos | RPC `get_payment_result` | RPC `get_payment_result` |
+
+Supabase Advisors puede indicar que las tablas con `SELECT` para `authenticated`
+son descubribles mediante GraphQL. Esto es intencional mientras el frontend use
+la Data API directamente; RLS continúa controlando las filas visibles. La tabla
+`payments` permanece cerrada al acceso directo.
 
 ---
 
@@ -343,53 +360,28 @@ VITE_PUBLIC_GOOGLEMAP_KEY=xxxxx
 - Configurar **Client ID** y **Client Secret**
 - Agregar **redirect URL** autorizada
 
-### 5️⃣ Crear las tablas en Supabase
+### 5️⃣ Aplicar el esquema de Supabase
 
-```sql
--- Tabla de perfiles de usuario
-CREATE TABLE UsersProfile (
-  id SERIAL PRIMARY KEY,
-  owner_id UUID REFERENCES auth.users(id) UNIQUE,
-  username TEXT,
-  displayName TEXT,
-  email TEXT,
-  phone TEXT,
-  carModel TEXT,
-  carPlate TEXT,
-  pictureUrl TEXT,
-  available BOOLEAN DEFAULT true,
-  created_at TIMESTAMP DEFAULT NOW()
-);
+El esquema no debe crearse copiando SQL manual desde el README. La fuente de
+verdad está en `supabase/migrations/` e incluye tablas, claves foráneas, índices,
+grants, RLS, políticas y RPC.
 
--- Tabla de viajes
-CREATE TABLE Trips (
-  id SERIAL PRIMARY KEY,
-  owner_id UUID REFERENCES auth.users(id),
-  customer_id TEXT,
-  name TEXT,
-  pickup TEXT,
-  destination TEXT,
-  passenger_phone TEXT,
-  preferred_time TEXT,
-  price DECIMAL,
-  done TEXT CHECK (done IN ('pending', 'completed', 'cancelled')),
-  created_at TIMESTAMP DEFAULT NOW()
-);
+Para reconstruir una base local desde cero:
 
--- Habilitar Row Level Security
-ALTER TABLE UsersProfile ENABLE ROW LEVEL SECURITY;
-ALTER TABLE Trips ENABLE ROW LEVEL SECURITY;
-
--- Políticas de seguridad
-CREATE POLICY "Users can view their own profile" ON UsersProfile
-  FOR SELECT USING (auth.uid() = owner_id);
-
-CREATE POLICY "Users can update their own profile" ON UsersProfile
-  FOR UPDATE USING (auth.uid() = owner_id);
-
-CREATE POLICY "Users can view their own trips" ON Trips
-  FOR SELECT USING (auth.uid() = owner_id);
+```bash
+npx supabase start
+npx supabase db reset
 ```
+
+Para desplegar migraciones pendientes en un proyecto vinculado:
+
+```bash
+npx supabase link --project-ref TU_PROJECT_REF
+npx supabase db push
+```
+
+Después de cualquier cambio de esquema se deben ejecutar Database Advisors y
+regenerar `src/supabase/database.types.ts`.
 
 ### 6️⃣ Ejecutar en desarrollo
 

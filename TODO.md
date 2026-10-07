@@ -1,6 +1,6 @@
 # TODO y roadmap de Taxi App
 
-> Auditoría realizada el 3 de octubre de 2026 sobre el repositorio, el build local y el proyecto productivo de Supabase. Este documento reemplaza como referencia al antiguo `todolist.txt`.
+> Auditoría realizada el 3 de octubre de 2026 y revisada el 7 de octubre de 2026 contra el proyecto productivo de Supabase. Este documento reemplaza como referencia al antiguo `todolist.txt`.
 
 ## Cómo usar este documento
 
@@ -19,11 +19,12 @@
 - [ ] No existe una suite automatizada de pruebas ni un comando `test`.
 - [ ] El bundle principal pesa aproximadamente 519 kB minificado y Vite advierte que supera 500 kB.
 - [ ] `npm audit --omit=dev` informa 3 vulnerabilidades altas: `react-router-dom`, `react-router` y `ws`.
-- [ ] Producción no tiene la RPC `get_payment_result(text)`, aunque `Payment.tsx` la invoca.
-- [ ] Supabase informa RLS desactivado en `UsersProfile` y `usersettings`.
-- [ ] Cinco tablas son visibles para `anon` y `authenticated` mediante GraphQL/Data API.
-- [ ] Hay políticas RLS duplicadas y claves foráneas sin índices en producción.
-- [ ] Las migraciones del repositorio no representan fielmente el esquema y las políticas de producción.
+- [x] Producción tiene la RPC `get_payment_result(text)` con permisos explícitos.
+- [x] RLS está activo en todas las tablas públicas, incluidas `UsersProfile` y `usersettings`.
+- [x] `anon` no tiene acceso directo a tablas; usa únicamente RPC públicas con campos y operaciones limitados.
+- [x] Las cinco tablas usadas por usuarios autenticados conservan grants mínimos y políticas RLS por propietario. Su presencia en GraphQL/Data API es intencional mientras el frontend acceda directamente a ellas.
+- [x] Se eliminaron las políticas RLS duplicadas y se añadieron índices a todas las claves foráneas reportadas por Advisors.
+- [x] La migración de conciliación y el esquema inicial versionado representan tablas, grants, RLS, políticas, índices y RPC de producción.
 - [ ] Existe una función productiva `create-preference-mp-test` que debería revisarse y retirarse.
 - [ ] Railway CLI local está desactualizado (`3.14.0`) y este checkout no está vinculado a un proyecto.
 
@@ -32,15 +33,15 @@
 ### P0.1 Cerrar la exposición de datos en Supabase — L
 
 - [ ] Obtener un `db pull`/snapshot del esquema productivo antes de cambiar políticas.
-- [ ] Inventariar los accesos necesarios para `anon`, `authenticated` y `service_role` por tabla y operación.
-- [ ] Activar RLS en `UsersProfile` y `usersettings` con políticas probadas antes de revocar accesos.
-- [ ] Revocar de `anon` el acceso directo a `Trips`, `Expenses`, `payments`, `UsersProfile` y `usersettings`.
-- [ ] Limitar `authenticated` por propietario con `(select auth.uid()) = owner_id`.
-- [ ] Eliminar las políticas anónimas antiguas y duplicadas de `Trips`.
-- [ ] Mantener una proyección pública mínima de conductores; no exponer email, teléfono ni datos internos.
-- [ ] Revisar las RPC `SECURITY DEFINER`, usar `search_path = ''`, permisos explícitos y validaciones internas.
-- [ ] Añadir pruebas de autorización como `anon`, conductor propietario, otro conductor y `service_role`.
-- [ ] Ejecutar Supabase Advisors después de la migración y dejar cero errores de RLS.
+- [x] Inventariar los accesos necesarios para `anon`, `authenticated` y `service_role` por tabla y operación.
+- [x] Activar RLS en `UsersProfile` y `usersettings` con políticas por propietario.
+- [x] Revocar de `anon` el acceso directo a `Trips`, `Expenses`, `payments`, `UsersProfile`, `usersettings` y `customer_profiles`.
+- [x] Limitar `authenticated` por propietario con `(select auth.uid()) = owner_id`/`user_id`.
+- [x] Eliminar las políticas anónimas antiguas y duplicadas de `Trips`.
+- [x] Mantener una proyección pública mínima de conductores; no exponer email, teléfono ni datos internos.
+- [x] Revisar las RPC `SECURITY DEFINER`, usar `search_path = ''`, permisos explícitos y validaciones internas.
+- [x] Ejecutar pruebas de autorización como `anon`, conductor propietario, otro conductor y `service_role` contra producción.
+- [x] Ejecutar Supabase Advisors después de la migración y dejar cero errores de RLS, políticas duplicadas o claves foráneas sin índice.
 
 **Criterios de aceptación**
 
@@ -102,9 +103,10 @@
 ### P0.5 Eliminar el drift entre migraciones y producción — L
 
 - [ ] Respaldar/exportar el esquema productivo y compararlo con `supabase/migrations`.
-- [ ] Crear una migración base reproducible que incluya tablas, tipos, constraints, índices, grants, RLS, políticas y RPC.
-- [ ] Incorporar `usersettings` a las migraciones o eliminar la tabla si se decide persistir ajustes de otra forma.
-- [ ] Añadir la RPC de pagos y cualquier trigger/índice existente solamente en producción.
+- [x] Crear una migración base reproducible que incluya tablas, tipos, constraints, índices, grants, RLS, políticas y RPC.
+- [x] Incorporar `usersettings` a las migraciones.
+- [x] Añadir la RPC de pagos y los índices que existían solamente en producción.
+- [x] Alinear las versiones de los archivos locales con el historial de migraciones registrado en producción.
 - [ ] Probar todas las migraciones desde una base vacía y desde el estado productivo actual.
 - [ ] Añadir `supabase migration list` y detección de drift al proceso de release.
 - [ ] Documentar rollback y respaldo antes de cada migración destructiva.
@@ -277,7 +279,7 @@
 - [ ] Medir Core Web Vitals y establecer presupuestos de JS, CSS e imágenes.
 - [ ] Optimizar y alojar avatares en Supabase Storage con tamaños y formatos limitados.
 - [ ] Reemplazar recargas completas de colecciones por actualización incremental y caché.
-- [ ] Añadir índices para todas las claves foráneas y consultas reales reportadas por Advisors.
+- [x] Añadir índices para todas las claves foráneas y consultas reales reportadas por Advisors.
 - [ ] Paginar viajes, pagos y gastos; virtualizar solamente cuando el volumen lo justifique.
 
 ### P3.2 Accesibilidad — M
@@ -390,5 +392,5 @@ Antes de crear más pantallas, conviene estabilizar estas entidades:
 - [Supabase — Dropping Node.js 20 support](https://supabase.com/changelog/45715-deprecation-notice-dropping-support-for-node-js-20): conviene fijar Node.js 22 o superior.
 - [Supabase — Row Level Security](https://supabase.com/docs/guides/database/postgres/row-level-security): patrones actuales para políticas y optimización de `auth.uid()`.
 - [Supabase — Database Linter](https://supabase.com/docs/guides/database/database-linter): explicación y remediación de los avisos detectados por Advisors.
-- La auditoría de Supabase del proyecto fue consultada directamente el 2 de octubre de 2026.
+- La auditoría de Supabase del proyecto fue consultada directamente el 7 de octubre de 2026 después de aplicar la migración de conciliación.
 - El estado de dependencias se obtuvo con `npm outdated` y `npm audit --omit=dev` el 3 de octubre de 2026.
